@@ -2,10 +2,6 @@
 
 A exploration tool for Euclidean geometry.
 
-Primitives supported by the draw module.
+npm run build
 
-Create Plane.
-
-Draw a Point.
-Draw a straint line between two Points.
-Draw a Circle using a Point as center.
+Open html/euclid-geo.html in browser
