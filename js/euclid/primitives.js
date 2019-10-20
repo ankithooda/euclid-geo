@@ -29,7 +29,7 @@ EuclideanPrimitves.prototype.line = function(point1, point2) {
 
 EuclideanPrimitves.prototype.circle = function(center, boundaryPoint) {
     var self = this;
-    var radius = center._gw.distanceTo(boundaryPoint._gw);
+    var radius = this.distanceBetweenPoints(center, boundaryPoint);
     var _gw = this._gwObject.circle(radius);
     _gw.position.x = center.x;
     _gw.position.y = center.y;
@@ -43,6 +43,10 @@ EuclideanPrimitves.prototype.circle = function(center, boundaryPoint) {
     }
 
     return circle;
+}
+
+EuclideanPrimitves.prototype.distanceBetweenPoints = function(point1, point2) {
+    return this._gwObject.distanceBetweenPoints(point1._gw, point2._gw);
 }
 
 module.exports = EuclideanPrimitves;

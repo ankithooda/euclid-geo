@@ -16,6 +16,8 @@ function GraphicsWrapper() {
 GraphicsWrapper.prototype.circle = function circle(radius) {
     var geometry = new THREE.CircleGeometry( radius , 64);
     var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+
+    // Remove center from the vertices list
     geometry.vertices.shift();
 
     var circle = new THREE.LineLoop( geometry, material );
@@ -35,6 +37,10 @@ GraphicsWrapper.prototype.line = function line(vector1, vector2) {
 GraphicsWrapper.prototype.point = function point(x, y) {
     return new THREE.Vector3(x, y, 0);
 };
+
+GraphicsWrapper.prototype.distanceBetweenPoints = function point(x, y) {
+    return x.distanceTo(y);
+}
 
 GraphicsWrapper.prototype.render = function(object) {
     this.scene.add(object);

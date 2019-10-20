@@ -10,11 +10,14 @@ function EuclidWorld() {
     var a = primitives.point(0, 0);
     var b = primitives.point(3, 3);
     var c = primitives.point(2, 2);
+    var d = primitives.point(3, 0);
 
-    var line = primitives.line(b, c);
+    var line1 = primitives.line(b, c);
     var circle = primitives.circle(a, c);
-    line.render();
+    var circle2 = primitives.circle(b, d);
+    line1.render();
     circle.render();
+    circle2.render();
 }
 
 module.exports = EuclidWorld;
