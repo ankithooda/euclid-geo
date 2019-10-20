@@ -1,1 +1,0 @@
-console.error("Euclid Geo not loaded.");
