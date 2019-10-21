@@ -86,13 +86,21 @@ function start() {
 
     var circle = ew.addCircle(a, c);
     var circle2 = ew.addCircle(b, d);
+
+    var e = ew.addPoint(-10, -10);
+    var f = ew.addPoint(10, 10);
+    var longLine = ew.addLine(e, f);
+
     a.render();
     b.render();
     c.render();
     d.render();
+    e.render();
+    f.render();
     line1.render();
     circle.render();
     circle2.render();
+    longLine.render();
 }
 
 module.exports = start;
