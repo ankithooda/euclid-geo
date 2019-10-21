@@ -1,16 +1,11 @@
-function CartesianPrimitives() {
-    this.pointsCounter = 0;
-    this.circleCounter = 0;
-    this.lineCounter = 0;
-}
+function CartesianPrimitives() {}
 
 CartesianPrimitives.prototype.point = function(x, y, label) {
     var point = {
         x: x,
         y: y,
-        label: label || "P_" + this.pointsCounter
+        label: label
     }
-    this.pointsCounter++;
     return point;
 }
 
@@ -18,9 +13,8 @@ CartesianPrimitives.prototype.line = function(point1, point2, label) {
     var line = {
         point1: point1,
         point2: point2,
-        label: label || "L_" + this.lineCounter
+        label: label
     };
-    this.lineCounter++;
     return line;
 }
 
@@ -28,9 +22,8 @@ CartesianPrimitives.prototype.circle = function(center, radius, label) {
     var circle = {
         center: center,
         radius: radius,
-        label: label || "C_" + this.circleCounter
+        label: label
     }
-    this.circleCounter++;
     return circle;
 }
 

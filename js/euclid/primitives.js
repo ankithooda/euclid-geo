@@ -3,12 +3,12 @@ function EuclideanPrimitives(GraphicsObject) {
     console.log("graphicsobject for primit", GraphicsObject);
 }
 
-/*
-    Each Euclidean Point has the following properties
+/**
+ *  Each Euclidean Point has the following properties
     x: x co-ordinate
     y: y co-ordinate
     label: label
-*/
+ */
 EuclideanPrimitives.prototype.point = function(x, y, label) {
     var self = this;
     var point = new Object();
@@ -22,9 +22,12 @@ EuclideanPrimitives.prototype.point = function(x, y, label) {
     return point;
 }
 
-/*
-    Each Euclidean Line as the following properties
-*/
+/**
+ * Each Euclidean Line has the following properties
+ * point1: first euclidean point that defines the line
+ * point2: second euclidean point that defines the line
+ * label: label
+ */
 EuclideanPrimitives.prototype.line = function(point1, point2, label) {
     var self = this;
     var line = new Object();
@@ -38,6 +41,12 @@ EuclideanPrimitives.prototype.line = function(point1, point2, label) {
     return line;
 }
 
+/**
+ * Each Euclidean Circle has the following properties
+ * center: Euclidean point representing the center
+ * radius: Radius of the circle
+ * label: label
+ */
 EuclideanPrimitives.prototype.circle = function(center, boundaryPoint, label) {
     var self = this;
     var radius = this.distanceBetweenPoints(center, boundaryPoint);
@@ -58,6 +67,9 @@ EuclideanPrimitives.prototype.circle = function(center, boundaryPoint, label) {
     return circle;
 }
 
+/**
+ * Takes two Euclidean Points and computes their distance.
+ */
 EuclideanPrimitives.prototype.distanceBetweenPoints = function(point1, point2) {
     return this._gwObject.distanceBetweenPoints(point1._gw, point2._gw);
 }
