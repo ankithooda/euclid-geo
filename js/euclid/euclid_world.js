@@ -15,6 +15,10 @@ function EuclidWorld() {
     var line1 = primitives.line(b, c);
     var circle = primitives.circle(a, c);
     var circle2 = primitives.circle(b, d);
+    a.render();
+    b.render();
+    c.render();
+    d.render();
     line1.render();
     circle.render();
     circle2.render();

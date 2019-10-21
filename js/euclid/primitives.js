@@ -31,8 +31,9 @@ EuclideanPrimitves.prototype.circle = function(center, boundaryPoint) {
     var self = this;
     var radius = this.distanceBetweenPoints(center, boundaryPoint);
     var _gw = this._gwObject.circle(radius);
-    _gw.position.x = center.x;
-    _gw.position.y = center.y;
+
+    // Set position of circle to the requester center
+    this._gwObject.setCirclePosition(_gw, center.x, center.y);
 
     var circle = new Object();
     circle.center = center;

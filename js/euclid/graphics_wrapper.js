@@ -24,22 +24,35 @@ GraphicsWrapper.prototype.circle = function circle(radius) {
     return circle;   
 }
 
-GraphicsWrapper.prototype.line = function line(vector1, vector2) {
+GraphicsWrapper.prototype.line = function line(point1, point2) {
     var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
     var geometry = new THREE.Geometry();
-    geometry.vertices.push(vector1);
-    geometry.vertices.push(vector2);
+    geometry.vertices.push(point1._vector);
+    geometry.vertices.push(point2._vector);
 
     var line = new THREE.Line( geometry, material );
     return line;
 }
 
-GraphicsWrapper.prototype.point = function point(x, y) {
-    return new THREE.Vector3(x, y, 0);
-};
+GraphicsWrapper.prototype.point = function(x, y) {
+    var material = new THREE.PointsMaterial( { size: 5, sizeAttenuation: false } );
+    var geometry = new THREE.Geometry();
+    var vector3 = new THREE.Vector3(x, y);
+    geometry.vertices.push(vector3);
+    var point = new THREE.Points( geometry, material );
+    point._vector = vector3;
+    return point;
+}
 
 GraphicsWrapper.prototype.distanceBetweenPoints = function point(x, y) {
-    return x.distanceTo(y);
+    var v1 = x._vector;
+    var v2 = y._vector;
+    return v1.distanceTo(v2);
+}
+
+GraphicsWrapper.prototype.setCirclePosition = function(circle, x, y) {
+    circle.position.x = x;
+    circle.position.y = y;
 }
 
 GraphicsWrapper.prototype.render = function(object) {
