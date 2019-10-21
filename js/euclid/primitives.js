@@ -3,6 +3,12 @@ function EuclideanPrimitives(GraphicsObject) {
     console.log("graphicsobject for primit", GraphicsObject);
 }
 
+/*
+    Each Euclidean Point has the following properties
+    x: x co-ordinate
+    y: y co-ordinate
+    label: label
+*/
 EuclideanPrimitives.prototype.point = function(x, y, label) {
     var self = this;
     var point = new Object();
@@ -16,6 +22,9 @@ EuclideanPrimitives.prototype.point = function(x, y, label) {
     return point;
 }
 
+/*
+    Each Euclidean Line as the following properties
+*/
 EuclideanPrimitives.prototype.line = function(point1, point2, label) {
     var self = this;
     var line = new Object();
