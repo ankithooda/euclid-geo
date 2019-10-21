@@ -15,30 +15,62 @@ function EuclidWorld() {
 }
 
 EuclidWorld.prototype.addPoint = function(x, y, label) {
+    var self = this;
     label = label || "P_" + this.pointCounter;
-    this.pointCounter++;
+    self.pointCounter++;
 
-    var point = this.primitives.point(x, y, label);
-    this.CartesianWorld.addPoint(point);
+    var point = self.primitives.point(x, y, label);
+    self.CartesianWorld.addPoint(point).forEach(function(cartesianPoint) {
+        var point = self.primitives.point(
+            cartesianPoint.x,
+            cartesianPoint.y,
+            cartesianPoint.label
+        );
+        point.render();
+    });
     return point;
 }
 
 EuclidWorld.prototype.addCircle = function(center, boundaryPoint, label) {
+    var self = this;
     label = label || "C_" + this.circleCounter;
     this.circleCounter++;
 
     var circle = this.primitives.circle(center, boundaryPoint, label);
-    this.CartesianWorld.addCircle(circle);
+    this.CartesianWorld.addCircle(circle).forEach(function(cartesianPoint) {
+        var point = self.primitives.point(
+            cartesianPoint.x,
+            cartesianPoint.y,
+            cartesianPoint.label
+        );
+        point.render();
+    });
     return circle;
 }
 
 EuclidWorld.prototype.addLine = function(point1, point2, label) {
+    var self = this;
     label = label || "L_" + this.lineCounter;
     this.lineCounter++;
 
     var line = this.primitives.line(point1, point2, label);
-    this.CartesianWorld.addLine(line);
+    this.CartesianWorld.addLine(line).forEach(function(cartesianPoint) {
+        var point = self.primitives.point(
+            cartesianPoint.x,
+            cartesianPoint.y,
+            cartesianPoint.label
+        );
+        point.render();
+    });
     return line;
+}
+
+EuclidWorld.prototype.convertToEuclidean = function(cartesianPoint) {
+    return this.primitives.point(
+        cartesianPoint.x,
+        cartesianPoint.y,
+        cartesianPoint.label
+    );
 }
 
 // Testing Function

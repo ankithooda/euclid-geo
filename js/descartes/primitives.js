@@ -13,7 +13,8 @@ CartesianPrimitives.prototype.line = function(point1, point2, label) {
     var line = {
         point1: point1,
         point2: point2,
-        label: label
+        label: label,
+        points: []
     };
     return line;
 }
@@ -22,7 +23,8 @@ CartesianPrimitives.prototype.circle = function(center, radius, label) {
     var circle = {
         center: center,
         radius: radius,
-        label: label
+        label: label,
+        points: []
     }
     return circle;
 }
