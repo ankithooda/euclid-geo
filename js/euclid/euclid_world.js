@@ -21,13 +21,14 @@ EuclidWorld.prototype.addPoint = function(x, y, label) {
 
     var point = self.primitives.point(x, y, label);
     self.CartesianWorld.addPoint(point).forEach(function(cartesianPoint) {
-        var point = self.primitives.point(
+        var newPoint = self.primitives.point(
             cartesianPoint.x,
             cartesianPoint.y,
             cartesianPoint.label
         );
-        point.render();
+        newPoint.render();
     });
+    point.render();
     return point;
 }
 
@@ -45,6 +46,7 @@ EuclidWorld.prototype.addCircle = function(center, boundaryPoint, label) {
         );
         point.render();
     });
+    circle.render();
     return circle;
 }
 
@@ -62,6 +64,7 @@ EuclidWorld.prototype.addLine = function(point1, point2, label) {
         );
         point.render();
     });
+    line.render();
     return line;
 }
 
@@ -77,30 +80,44 @@ EuclidWorld.prototype.convertToEuclidean = function(cartesianPoint) {
 function start() {
     var ew = new EuclidWorld();
 
-    var a = ew.addPoint(0, 0);
+    // var a = ew.addPoint(0, 0);
+    // var b = ew.addPoint(3, 3);
+    // var c = ew.addPoint(2, 2);
+    // var d = ew.addPoint(3, 0);
+
+    // var line1 = ew.addLine(b, c);
+
+    // var circle = ew.addCircle(a, c);
+    // var circle2 = ew.addCircle(b, d);
+
+    // var e = ew.addPoint(-10, -10);
+    // var f = ew.addPoint(10, 10);
+    // var longLine = ew.addLine(e, f);
+
+    // a.render();
+    // b.render();
+    // c.render();
+    // d.render();
+    // e.render();
+    // f.render();
+    // line1.render();
+    // circle.render();
+    // circle2.render();
+    // longLine.render();
+
+    var a = ew.addPoint(-3, 3);
     var b = ew.addPoint(3, 3);
-    var c = ew.addPoint(2, 2);
-    var d = ew.addPoint(3, 0);
+    var c = ew.addPoint(3, -3);
+    var d = ew.addPoint(-3, -3);
+    var e = ew.addPoint(-4, -1);
+    var f = ew.addPoint(4, -1);
+    var g = ew.addPoint(0, -1);
 
-    var line1 = ew.addLine(b, c);
-
-    var circle = ew.addCircle(a, c);
-    var circle2 = ew.addCircle(b, d);
-
-    var e = ew.addPoint(-10, -10);
-    var f = ew.addPoint(10, 10);
-    var longLine = ew.addLine(e, f);
-
-    a.render();
-    b.render();
-    c.render();
-    d.render();
-    e.render();
-    f.render();
-    line1.render();
-    circle.render();
-    circle2.render();
-    longLine.render();
+    var l1 = ew.addLine(a, c);
+    var l2 = ew.addLine(b, d);
+    var l3 = ew.addLine(e, f);
+    ew.addLine(g, b);
+    
 }
 
 module.exports = start;

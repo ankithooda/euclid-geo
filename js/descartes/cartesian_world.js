@@ -33,18 +33,31 @@ CartesianWorld.prototype.addPoint = function(euclideanPoint) {
 CartesianWorld.prototype.addLine = function(euclideanLine) {
     var self = this;
     var line = self.convertToCartesianLine(euclideanLine);
-    self.lines.push(line);
     var allIntersectionPoints = [];
 
-    self.circles.forEach(function(circle) {
-        var intersectionPoints = self.intersectionLineCircle(line, circle);
+    // self.circles.forEach(function(circle) {
+    //     var intersectionPoints = self.intersectionLineCircle(line, circle);
+    //     intersectionPoints.forEach(function(point) {
+    //         line.points.push(point);
+    //         circle.points.push(point);
+    //         self.points.push(point);
+    //         allIntersectionPoints.push(point);
+    //     })
+    // });
+    // console.log("all intersection points in addLine", allIntersectionPoints);
+
+    self.lines.forEach(function(currentLine) {
+        var intersectionPoints = self.intersectionLineLine(line, currentLine);
         intersectionPoints.forEach(function(point) {
             line.points.push(point);
-            circle.points.push(point);
+            currentLine.points.push(point);
             self.points.push(point);
             allIntersectionPoints.push(point);
-        })
+        });
     });
+
+    // Push new line to the line list.
+    self.lines.push(line);
     return allIntersectionPoints;
 }
 
@@ -54,15 +67,15 @@ CartesianWorld.prototype.addCircle = function(euclideanCircle) {
     self.circles.push(circle);
     var allIntersectionPoints = [];
 
-    self.lines.forEach(function(line) {
-        var intersectionPoints = self.intersectionLineCircle(line, circle);
-        intersectionPoints.forEach(function(point) {
-            line.points.push(point);
-            circle.points.push(point);
-            self.points.push(point);
-            allIntersectionPoints.push(point);
-        })        
-    });
+    // self.lines.forEach(function(line) {
+    //     var intersectionPoints = self.intersectionLineCircle(line, circle);
+    //     intersectionPoints.forEach(function(point) {
+    //         line.points.push(point);
+    //         circle.points.push(point);
+    //         self.points.push(point);
+    //         allIntersectionPoints.push(point);
+    //     })        
+    // });
 
     return allIntersectionPoints;
 }
@@ -79,6 +92,13 @@ CartesianWorld.prototype.pointLiesOnCircle = function(point, circle) {
         circle.radius,
         this.distance(point, circle.center)
     );
+}
+
+CartesianWorld.prototype.intersectionLineLine = function(line1, line2) {
+    var x = (line2.intercept - line1.intercept) / (line1.slope - line2.slope);
+    var y = (line2.slope * x) + line2.intercept;
+    var intersectionPoint = this.primitives.point(x, y, line1.label + line2.label);
+    return [intersectionPoint];
 }
 
 CartesianWorld.prototype.intersectionLineCircle = function(line, circle) {
@@ -129,9 +149,17 @@ CartesianWorld.prototype.intersectionLineCircle = function(line, circle) {
     var m = (line.point2.y - line.point1.y) / (line.point2.x - line.point1.x);
     var n = (line.point2.y - m * line.point2.x);
 
-    return findCircleLineIntersections(r, h, k, m, n).map(function(coordinates) {
-        return self.primitives.point(coordinates[0], coordinates[1], "INTERSECTION");
-    });
+    var intersectionPoints = findCircleLineIntersections(r, h, k, m, n);
+    console.log("intersection points from fn", r, h, k, m, n, intersectionPoints);
+
+    return [
+        self.primitives.point(intersectionPoints[0], intersectionPoints[1], "INTERSECT")
+    ]
+
+    // return intersectionPoints.map(function(coordinates) {
+    //     // console.log("Intersection Points", coordinates, coordinates[0], coordinates[1]);
+    //     return self.primitives.point(coordinates[0], coordinates[1], "INTERSECTION");
+    // });
 }
 
 CartesianWorld.prototype.distance = function(point1, point2) {
