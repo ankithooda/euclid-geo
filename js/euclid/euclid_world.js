@@ -105,18 +105,24 @@ function start() {
     // circle2.render();
     // longLine.render();
 
-    var a = ew.addPoint(-3, 3);
-    var b = ew.addPoint(3, 3);
-    var c = ew.addPoint(3, -3);
-    var d = ew.addPoint(-3, -3);
-    var e = ew.addPoint(-4, -1);
-    var f = ew.addPoint(4, -1);
-    var g = ew.addPoint(0, -1);
+    var a = ew.addPoint(0, 0);
+    var b = ew.addPoint(1, 1);
+    var c = ew.addPoint(0, 1);
+    var d = ew.addPoint(1, 0);
+    var e = ew.addPoint(-2, 2);
+    var f = ew.addPoint(2, -2);
 
-    var l1 = ew.addLine(a, c);
-    var l2 = ew.addLine(b, d);
-    var l3 = ew.addLine(e, f);
-    ew.addLine(g, b);
+
+    var c1 = ew.addCircle(a, b);
+    var c2 = ew.addCircle(a, c);
+    var c3 = ew.addCircle(d, b);
+
+    ew.addLine(e, f);
+
+    // var l1 = ew.addLine(a, c);
+    // var l2 = ew.addLine(b, d);
+    // var l3 = ew.addLine(e, f);
+    // ew.addLine(g, b);
     
 }
 

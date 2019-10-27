@@ -35,17 +35,7 @@ CartesianWorld.prototype.addLine = function(euclideanLine) {
     var line = self.convertToCartesianLine(euclideanLine);
     var allIntersectionPoints = [];
 
-    // self.circles.forEach(function(circle) {
-    //     var intersectionPoints = self.intersectionLineCircle(line, circle);
-    //     intersectionPoints.forEach(function(point) {
-    //         line.points.push(point);
-    //         circle.points.push(point);
-    //         self.points.push(point);
-    //         allIntersectionPoints.push(point);
-    //     })
-    // });
-    // console.log("all intersection points in addLine", allIntersectionPoints);
-
+    // Get all Intersecting points for all other lines
     self.lines.forEach(function(currentLine) {
         var intersectionPoints = self.intersectionLineLine(line, currentLine);
         intersectionPoints.forEach(function(point) {
@@ -55,6 +45,18 @@ CartesianWorld.prototype.addLine = function(euclideanLine) {
             allIntersectionPoints.push(point);
         });
     });
+
+    // Get all Intersectting points for all other circles
+    self.circles.forEach(function(circle) {
+        var intersectionPoints = self.intersectionLineCircle(line, circle);
+        intersectionPoints.forEach(function(point) {
+            line.points.push(point);
+            circle.points.push(point);
+            self.points.push(point);
+            allIntersectionPoints.push(point);
+        });
+    });
+
 
     // Push new line to the line list.
     self.lines.push(line);
@@ -67,15 +69,25 @@ CartesianWorld.prototype.addCircle = function(euclideanCircle) {
     self.circles.push(circle);
     var allIntersectionPoints = [];
 
-    // self.lines.forEach(function(line) {
-    //     var intersectionPoints = self.intersectionLineCircle(line, circle);
-    //     intersectionPoints.forEach(function(point) {
-    //         line.points.push(point);
-    //         circle.points.push(point);
-    //         self.points.push(point);
-    //         allIntersectionPoints.push(point);
-    //     })        
-    // });
+    self.lines.forEach(function(line) {
+        var intersectionPoints = self.intersectionLineCircle(line, circle);
+        intersectionPoints.forEach(function(point) {
+            line.points.push(point);
+            circle.points.push(point);
+            self.points.push(point);
+            allIntersectionPoints.push(point);
+        });
+    });
+
+    self.circles.forEach(function(currentCircle) {
+        var intersectionPoints = self.intersectionCircleCircle(circle, currentCircle);
+        intersectionPoints.forEach(function(point) {
+            circle.points.push(point);
+            currentCircle.points.push(point);
+            self.points.push(point);
+            allIntersectionPoints.push(point);
+        });
+    });
 
     return allIntersectionPoints;
 }
@@ -103,63 +115,102 @@ CartesianWorld.prototype.intersectionLineLine = function(line1, line2) {
 
 CartesianWorld.prototype.intersectionLineCircle = function(line, circle) {
     var self = this;
-    function findCircleLineIntersections(r, h, k, m, n) {
-        // circle: (x - h)^2 + (y - k)^2 = r^2
-        // line: y = m * x + n
-        // r: circle radius
-        // h: x value of circle centre
-        // k: y value of circle centre
-        // m: slope
-        // n: y-intercept
-        
-        // get a, b, c values
-        function sq(m) {
-            return Math.pow(m, 2);
-        }
-        function sqrt(b) {
-            return Math.sqrt(m)
-        }
-
-        var a = 1 + sq(m);
-        var b = -h * 2 + (m * (n - k)) * 2;
-        var c = sq(h) + sq(n - k) - sq(r);
-    
-        // get discriminant
-        var d = sq(b) - 4 * a * c;
-        if (d >= 0) {
-            // insert into quadratic formula
-            var intersections = [
-                (-b + sqrt(sq(b) - 4 * a * c)) / (2 * a),
-                (-b - sqrt(sq(b) - 4 * a * c)) / (2 * a)
-            ];
-            if (d == 0) {
-                // only 1 intersection
-                return [intersections[0]];
-            }
-            return intersections;
-        }
-        // no intersection
-        return [];
+    function square(x) {
+        return Math.pow(x, 2);
     }
+    function lineCircleIntersection(line, circle) {
+        const dx = line.point2.x - line.point1.x;
+        const dy = line.point2.y - line.point1.y;
+        const dr2 = square(dx) + square(dy);
+      
+        const cx = circle.center.x;
+        const cy = circle.center.y;
+        const D = (line.point2.x - cx) * (line.point2.y - cy) - (line.point2.x - cx) * (line.point2.y - cy);
+      
+        const disc = square(circle.radius) * dr2 - square(D);
+        if (disc < 0) return [];  // No solution
+      
+        const xa = D * dy / dr2;
+        const ya = -D * dx / dr2;
+        if (self.eqFloatWithTolerance(disc, 0)) return [[xa, ya]];  // One solution
+      
+        const xb = dx * (dy < 0 ? -1 : 1) * Math.sqrt(disc) / dr2;
+        const yb = Math.abs(dy) * Math.sqrt(disc) / dr2;
+        return [[xa + xb, ya + yb], [xa - xb, ya - yb]];
+    }
+    return lineCircleIntersection(line, circle).map(function(xyPair) {
+        return self.primitives.point(xyPair[0], xyPair[1]);
+    });
 
-    var r = circle.radius;
-    var h = circle.center.x;
-    var k = circle.center.y;
+}
 
-    var m = (line.point2.y - line.point1.y) / (line.point2.x - line.point1.x);
-    var n = (line.point2.y - m * line.point2.x);
+CartesianWorld.prototype.intersectionCircleCircle = function(circle1, circle2) {
+    var self = this;
+    function intersection(x0, y0, r0, x1, y1, r1) {
+        var a, dx, dy, d, h, rx, ry;
+        var x2, y2;
 
-    var intersectionPoints = findCircleLineIntersections(r, h, k, m, n);
-    console.log("intersection points from fn", r, h, k, m, n, intersectionPoints);
+        /* dx and dy are the vertical and horizontal distances between
+         * the circle centers.
+         */
+        dx = x1 - x0;
+        dy = y1 - y0;
 
-    return [
-        self.primitives.point(intersectionPoints[0], intersectionPoints[1], "INTERSECT")
-    ]
+        /* Determine the straight-line distance between the centers. */
+        d = Math.sqrt((dy*dy) + (dx*dx));
 
-    // return intersectionPoints.map(function(coordinates) {
-    //     // console.log("Intersection Points", coordinates, coordinates[0], coordinates[1]);
-    //     return self.primitives.point(coordinates[0], coordinates[1], "INTERSECTION");
-    // });
+        /* Check for solvability. */
+        if (d > (r0 + r1)) {
+            /* no solution. circles do not intersect. */
+            return [];
+        }
+        if (d < Math.abs(r0 - r1)) {
+            /* no solution. one circle is contained in the other */
+            return [];
+        }
+
+        /* 'point 2' is the point where the line through the circle
+         * intersection points crosses the line between the circle
+         * centers.  
+         */
+
+        /* Determine the distance from point 0 to point 2. */
+        a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d) ;
+
+        /* Determine the coordinates of point 2. */
+        x2 = x0 + (dx * a/d);
+        y2 = y0 + (dy * a/d);
+
+        /* Determine the distance from point 2 to either of the
+         * intersection points.
+         */
+        h = Math.sqrt((r0*r0) - (a*a));
+
+        /* Now determine the offsets of the intersection points from
+         * point 2.
+         */
+        rx = -dy * (h/d);
+        ry = dx * (h/d);
+
+        /* Determine the absolute intersection points. */
+        var xi = x2 + rx;
+        var xi_prime = x2 - rx;
+        var yi = y2 + ry;
+        var yi_prime = y2 - ry;
+
+        var intersectionPoint1 = self.primitives.point(xi, yi);
+        var intersectionPoint2 = self.primitives.point(xi_prime, yi_prime);
+
+        return [intersectionPoint1, intersectionPoint2];
+    }
+    return intersection(
+        circle1.center.x,
+        circle1.center.y,
+        circle1.radius,
+        circle2.center.x,
+        circle2.center.y,
+        circle2.radius 
+    );
 }
 
 CartesianWorld.prototype.distance = function(point1, point2) {
