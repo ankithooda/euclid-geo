@@ -4,14 +4,17 @@
   "description": "A exploration tool for Euclidean geometry.",
   "main": "euclid.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify js/euclid-geo.js > build/euclid-geo-bundle.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://gitlab.com/ankithooda/euclid-geo.git"
   },
   "keywords": [
-    "math"
+    "math",
+    "geometry",
+    "learning"
   ],
   "author": "Ankit Hooda",
   "license": "ISC",
@@ -19,7 +22,7 @@
     "url": "https://gitlab.com/ankithooda/euclid-geo/issues"
   },
   "homepage": "https://gitlab.com/ankithooda/euclid-geo#readme",
-  "dependencies": {
-    "three": "^0.109.0"
+  "devDependencies": {
+    "browserify": "^16.5.0"
   }
 }
