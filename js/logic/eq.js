@@ -48,6 +48,12 @@ function Eq() {
         return Object.keys(eqClass);
     }
 
+    function getAll() {
+        return equivalenceClasses.filter(function(klass) {
+            return Object.keys(klass).length > 0;
+        });
+    }
+
     function printDebugInfo() {
         console.log("EQUI CLASSES");
         console.log(JSON.stringify(equivalenceClasses));
@@ -68,6 +74,7 @@ function Eq() {
         hold: hold,
         holds: holds,
         getEqual: getEqual,
+        getAll: getAll,
         debug: printDebugInfo,
         gc: runGC
     }

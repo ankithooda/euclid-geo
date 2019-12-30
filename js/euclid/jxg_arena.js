@@ -23,10 +23,17 @@ function JXGArena() {
         return self.board.create('circle', [center, boundaryPoint], {dash:2});
     }
 
+    function intersection(g1, g2) {
+        return [0, 1].map(function (root) {
+            return self.board.create('intersection', [g1, g2, root]);
+        })
+    }
+
     return {
         point: point,
         line: line,
-        circle: circle
+        circle: circle,
+        intersection: intersection
     }
 }
 
