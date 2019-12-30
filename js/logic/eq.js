@@ -5,6 +5,8 @@ function Eq() {
     const emptyObject = new Object();
 
     function hold(thing1, thing2) {
+
+        thing2 = thing2 || thing1;
         let indices = [];
         let newClass = {};
         newClass[thing1] = true;
@@ -71,4 +73,4 @@ function Eq() {
     }
 }
 
-module.exports = new Eq();
+module.exports = Eq;
