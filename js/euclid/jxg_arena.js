@@ -25,7 +25,8 @@ function JXGArena() {
 
     function intersection(g1, g2) {
         return [0, 1].map(function (root) {
-            return self.board.create('intersection', [g1, g2, root]);
+            var p = self.board.create('intersection', [g1, g2, root], {face: 'x'});
+            return p;
         })
     }
 
