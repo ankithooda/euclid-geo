@@ -1,0 +1,14 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: 90% auto;
+}
+.grid-tools {
+    display: grid;
+    grid-template-rows: 10% 10% 10%;
+}
+.grid-item {
+    justify-self: center;
+}
+.grid-tool {
+    justify-self: center;
+}
