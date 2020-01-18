@@ -85,6 +85,11 @@ function EuclidWorld() {
     }
 
     // Export Functions
+
+    function button(x, y, text, fun) {
+        Arena.button(x, y, text, fun);
+    }
+
     function point(x, y) {
         let p = Arena.point(x, y);
         _addPoint(p);
@@ -153,6 +158,7 @@ function EuclidWorld() {
     }
 
     return {
+        button: button,
         point: point,
         line: line,
         circle: circle,
@@ -184,6 +190,14 @@ function start() {
 
     euclid.lineSegment(a3, a1);
     euclid.lineSegment(a3, a2);
+
+    // testing buttons
+//    var a5 = euclid.point(10, 10);
+//    var a6 = euclid.point(12, 12);
+//    var fun = function() {
+//        euclid.circle(a5, a6);;
+//    }
+//    var button1 = euclid.button(5, 5, 'Draw Circle', fun)
 
     // var c1 = euclid.circle(a1, a2);
     // var c2 = euclid.circle(a2, a1);

@@ -11,6 +11,10 @@ function JXGArena() {
         }
     );
 
+//    function button(x, y, text, fun) {
+//        var button1 = self.board.create('button', [x, y, text, fun], {});
+//    }
+
     function point(x, y) {
         return self.board.create('point', [x, y]);
     }
@@ -35,6 +39,7 @@ function JXGArena() {
     }
 
     return {
+        button: button,
         point: point,
         line: line,
         circle: circle,
