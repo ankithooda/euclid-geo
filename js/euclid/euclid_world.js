@@ -157,6 +157,7 @@ function EuclidWorld() {
         console.log(self.points);
     }
 
+    
     return {
         button: button,
         point: point,
@@ -179,17 +180,17 @@ function start() {
     // Arena.circle(a1, a2); 
     var euclid = new EuclidWorld();
 
-    var a1 = euclid.point(0, 0);
-    var a2 = euclid.point(3, 0);
-    euclid.lineSegment(a1, a2);
-    euclid.circle(a1, a2);
-    euclid.circle(a2, a1);
+    // var a1 = euclid.point(0, 0);
+    // var a2 = euclid.point(3, 0);
+    // euclid.lineSegment(a1, a2);
+    // euclid.circle(a1, a2);
+    // euclid.circle(a2, a1);
 
-    var a3 = euclid.points["C"];
-    var a4 = euclid.points["D"];
+    // var a3 = euclid.points["C"];
+    // var a4 = euclid.points["D"];
 
-    euclid.lineSegment(a3, a1);
-    euclid.lineSegment(a3, a2);
+    // euclid.lineSegment(a3, a1);
+    // euclid.lineSegment(a3, a2);
 
     // testing buttons
 //    var a5 = euclid.point(10, 10);
@@ -240,4 +241,4 @@ function start() {
     // console.log(euclid.getAllEquiClass());
 }
 
-module.exports = start;
+module.exports = new EuclidWorld();
