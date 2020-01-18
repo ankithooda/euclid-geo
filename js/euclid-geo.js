@@ -2,6 +2,12 @@ const EuclidWorld = require("./euclid/euclid_world.js");
 // console.log(JXG);
 
 var input = document.getElementById("dsl");
+var drawButton = document.getElementById("draw");
+
+drawButton.addEventListener("click", function(event) {
+    dslHandler(input.value);
+    input.value = "";
+});
 
 input.addEventListener("keyup", function(event) {
     // Number 13 is the "Enter" key on the keyboard
@@ -9,8 +15,8 @@ input.addEventListener("keyup", function(event) {
       // Cancel the default action, if needed
       event.preventDefault();
       // Trigger the button element with a click
-      dslHandler(document.getElementById('dsl').value);
-      document.getElementById('dsl').value = "";
+      dslHandler(input.value);
+      input.value = "";
     }
   });
 
