@@ -143,24 +143,57 @@ function start() {
     // Arena.circle(a1, a2); 
     var euclid = new EuclidWorld();
 
-    var a1 = euclid.point(2, 3);
-    var a2 = euclid.point(-1, -1);
-    var c1 = euclid.circle(a1, a2);
-    var c2 = euclid.circle(a2, a1);
+    var a1 = euclid.point(0, 0);
+    var a2 = euclid.point(3, 0);
+    euclid.lineSegment(a1, a2);
+    euclid.circle(a1, a2);
+    euclid.circle(a2, a1);
 
     var a3 = euclid.points["C"];
-    console.log(c1.hasPoint(a2));
-    console.log(c1);
-    console.log(c1.hasPoint(a1));
-    euclid.lineSegment(a1, a3);
-    euclid.lineSegment(a1, a2);
-    euclid.lineSegment(a2, a3);
-
     var a4 = euclid.points["D"];
-    euclid.lineSegment(a1, a4);
 
-    euclid.debug();
-    console.log(euclid.getAllEquiClass());
+    euclid.lineSegment(a3, a1);
+    euclid.lineSegment(a3, a2);
+
+    // var c1 = euclid.circle(a1, a2);
+    // var c2 = euclid.circle(a2, a1);
+
+    // var a3 = euclid.points["C"];
+    // console.log(c1.hasPoint(a2));
+    // console.log(c1);
+    // console.log(c1.hasPoint(a1));
+    // euclid.lineSegment(a1, a3);
+    // euclid.lineSegment(a1, a2);
+    // euclid.lineSegment(a2, a3);
+
+    // var a4 = euclid.points["D"];
+    // // euclid.lineSegment(a1, a4);
+
+    // var a = euclid.point(0, 0);
+    // var b = euclid.point(2, 2);
+    // var c = euclid.point(1, 5);
+
+
+
+    // var bc = euclid.lineSegment(b, c);
+    // var ab = euclid.lineSegment(a, b);
+
+    // var c_ab = euclid.circle(a, b);
+    // var c_ba = euclid.circle(b, a);
+
+    // var d = euclid.points["D"];
+    // var da = euclid.lineSegment(d, a);
+    // var db = euclid.lineSegment(d, b);
+
+    // euclid.line(d, a);
+    // euclid.line(d, b);
+
+    // var f = euclid.points["F"];
+    // var c_bf = euclid.circle(b, f);
+    // var c_df = euclid.circle(d, f);
+
+    // euclid.debug();
+    // console.log(euclid.getAllEquiClass());
 }
 
 module.exports = start;
