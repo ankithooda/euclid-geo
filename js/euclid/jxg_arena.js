@@ -30,11 +30,17 @@ function JXGArena() {
         })
     }
 
+    function button(x, y, label, handler) {
+        return self.board.create('button', [x, y, label, handler], {});
+    }
+
     return {
         point: point,
         line: line,
         circle: circle,
-        intersection: intersection
+        intersection: intersection,
+        button: button,
+        board: self.board
     }
 }
 

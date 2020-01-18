@@ -9,7 +9,37 @@ function EuclidWorld() {
     self.points = {};
     self.lines = [];
     self.circles = [];
-    
+
+    var getMouseCoords = function(e, i) {
+        var cPos = Arena.board.getCoordsTopLeftCorner(e, i),
+            absPos = JXG.getPosition(e, i),
+            dx = absPos[0]-cPos[0],
+            dy = absPos[1]-cPos[1];
+
+        return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], Arena.board);
+    };
+    var down = function(e) {
+        var canCreate = true, i, coords, el;
+
+        if (e[JXG.touchProperty]) {
+            // index of the finger that is used to extract the coordinates
+            i = 0;
+        }
+        coords = getMouseCoords(e, i);
+
+        for (el in Arena.board.objects) {
+            if(JXG.isPoint(Arena.board.objects[el]) && Arena.board.objects[el].hasPoint(coords.scrCoords[1], coords.scrCoords[2])) {
+                canCreate = false;
+                break;
+            }
+        }
+
+        if (canCreate) {
+            point(coords.usrCoords[1], coords.usrCoords[2]);
+        }
+    };
+    Arena.board.on('down', down);
+
     function _addPoint(p) {
         self.points[p.name.toString()] = p;
         return p;
