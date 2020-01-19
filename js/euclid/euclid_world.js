@@ -5,11 +5,6 @@ const Cartesian = require("../../util/cartesian")
 function EuclidWorld() {
     var self = this;
 
-    self.eqRelation = new Eq();
-    self.points = {};
-    self.lines = [];
-    self.circles = [];
-
     var getMouseCoords = function(e, i) {
         var cPos = Arena.board.getCoordsTopLeftCorner(e, i),
             absPos = JXG.getPosition(e, i),
@@ -19,70 +14,15 @@ function EuclidWorld() {
         return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], Arena.board);
     };
     var down = function(e) {
-        var canCreate = true, i, coords, el;
-
+        var i;
         if (e[JXG.touchProperty]) {
             // index of the finger that is used to extract the coordinates
             i = 0;
         }
-        coords = getMouseCoords(e, i);
-
-        for (el in Arena.board.objects) {
-            if(JXG.isPoint(Arena.board.objects[el]) && Arena.board.objects[el].hasPoint(coords.scrCoords[1], coords.scrCoords[2])) {
-                canCreate = false;
-                break;
-            }
-        }
-
-        if (canCreate) {
-            point(coords.usrCoords[1], coords.usrCoords[2]);
-        }
+        var coords = getMouseCoords(e, i);
+        point(coords.usrCoords[1], coords.usrCoords[2]);
     };
     Arena.board.on('down', down);
-
-    function _addPoint(p) {
-        self.points[p.name.toString()] = p;
-        return p;
-    }
-
-    function _addLine(l) {
-        self.lines.forEach(function(line) {
-            Arena.intersection(l, line);
-        });
-        self.circles.forEach(function (circle) {
-            Arena.intersection(l, circle);
-        });
-        self.lines.push(l);
-        return l;
-    }
-
-    function _addCircle(c) {
-        function updateEquiRelation(p) {
-            var radiusLine = [
-                c.center.name,
-                c.point2.name
-            ].sort().join("");
-            var newRadius = [
-                c.center.name,
-                p.name
-            ].sort().join("");
-
-            self.eqRelation.hold(
-                radiusLine,
-                newRadius
-            );
-            return p;
-        }
-        self.lines.forEach(function(line) {
-            Arena.intersection(c, line);
-
-        });
-        self.circles.forEach(function (circle) {
-            Arena.intersection(c, circle);
-        });
-        self.circles.push(c);
-        return c;
-    }
 
     // Export Functions
 
@@ -91,83 +31,48 @@ function EuclidWorld() {
     }
 
     function point(x, y) {
-        let p = Arena.point(x, y);
-        _addPoint(p);
-        return p;
+        return Arena.point(x, y);
     }
 
     function line(p1, p2) {
         let l = Arena.line(p1, p2);
-        _addLine(l);
+        if (l !== undefined) {
+            Arena.intersection(l);
+        }
+        console.log(Arena.board.elementsByName);
+        console.log(Arena.board.objects);
+        console.log(Arena.board.objectsList);
         return l;
     }
 
     function lineSegment(p1, p2) {
-        console.log(p1.X(),"--------" ,p1.Y());
-        function updateEquiRelation(c, p) {
-            var radiusLine = [
-                c.center.name,
-                c.point2.name
-            ].sort().join("");
-            var newRadius = [
-                c.center.name,
-                p.name
-            ].sort().join("");
-
-            self.eqRelation.hold(
-                radiusLine,
-                newRadius
-            );
-            return p;
+        var l = Arena.lineSegment(p1, p2);
+        if (l !== undefined) {
+            Arena.intersection(l);
         }
-        var l = line(p1, p2);
-        self.circles.forEach(function(circle) {
-            let radius = Cartesian.distance(circle.center, circle.point2);
-            if (Cartesian.eqWithTolerance(
-                    radius,
-                    Cartesian.distance(circle.center, p1)
-                    )
-                ) {
-                console.log("updating for ",  p1.name);
-                updateEquiRelation(circle, p1);
-            }
-            if (Cartesian.eqWithTolerance(
-                    radius,
-                    Cartesian.distance(circle.center, p2)
-                    )
-                ) {
-                console.log("updating for ",  p2.name);
-                updateEquiRelation(circle, p2);
-            }
-        });
-        return l;   
+        console.log(Arena.board.elementsByName);
+        console.log(Arena.board.objects);
+        console.log(Arena.board.objectsList);
+        return l;
     }
 
     function circle(center, boundaryPoint) {
         let c = Arena.circle(center, boundaryPoint);
-        _addCircle(c);
+        if (c !== undefined) {
+            Arena.intersection(c);
+        }
+        console.log(Arena.board.elementsByName);
+        console.log(Arena.board.objects);
+        console.log(Arena.board.objectsList);
         return c;
     }
 
-    function getAllEquiClass() {
-        return self.eqRelation.getAll();
-    }
-
-    function _printDebugInfo() {
-        console.log(self.points);
-    }
-
-    
     return {
         button: button,
         point: point,
         line: line,
         circle: circle,
-        getAllEquiClass: getAllEquiClass,
         lineSegment: lineSegment,
-        debug: _printDebugInfo,
-        points: self.points,
-        getAllEquiClass: getAllEquiClass
     }
 }
 

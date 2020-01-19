@@ -24,16 +24,13 @@ input.addEventListener("keyup", function(event) {
 function dslHandler(text) {
     let source = text.split(" ");
     let command = source[0].toUpperCase();
-    let arg1 = source[1].toUpperCase();
-    let arg2 = source[2].toUpperCase();
-    let p1 = EuclidWorld.points[arg1];
-    let p2 = EuclidWorld.points[arg2];
+    let p1 = source[1].toUpperCase();
+    let p2 = source[2].toUpperCase();
 
-    if (command === "CIRCLE") {
-        EuclidWorld.circle(p1, p2);
-    } else if (command === "LINE") {
-        EuclidWorld.lineSegment(p1, p2);
-    } else {
-        ;
+    switch(command) {
+        case "CIRCLE": EuclidWorld.circle(p1, p2); break;
+        case "LINE": EuclidWorld.line(p1, p2); break;
+        case "SEGMENT": EuclidWorld.lineSegment(p1, p2); break;
+        default: ;
     }
 }
