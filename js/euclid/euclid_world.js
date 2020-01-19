@@ -47,10 +47,10 @@ function EuclidWorld() {
 
     function _addLine(l) {
         self.lines.forEach(function(line) {
-            Arena.intersection(l, line).forEach(_addPoint);
+            Arena.intersection(l, line);
         });
         self.circles.forEach(function (circle) {
-            Arena.intersection(l, circle).forEach(_addPoint);
+            Arena.intersection(l, circle);
         });
         self.lines.push(l);
         return l;
@@ -74,11 +74,11 @@ function EuclidWorld() {
             return p;
         }
         self.lines.forEach(function(line) {
-            Arena.intersection(c, line).map(_addPoint);
+            Arena.intersection(c, line);
 
         });
         self.circles.forEach(function (circle) {
-            Arena.intersection(c, circle).map(_addPoint);
+            Arena.intersection(c, circle);
         });
         self.circles.push(c);
         return c;

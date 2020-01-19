@@ -30,7 +30,18 @@ function JXGArena() {
     function intersection(g1, g2) {
         return [0, 1].map(function (root) {
             var p = self.board.create('intersection', [g1, g2, root], {face: 'x'});
-            return p;
+            var canCreate = true;
+            for (el in self.board.objects) {
+                if(self.board.objects[el] !== p && JXG.isPoint(self.board.objects[el]) && self.board.objects[el].hasPoint(p.coords.scrCoords[1], p.coords.scrCoords[2])) {
+                    canCreate = false;
+                    break;
+                }
+            }
+            if(canCreate) {
+                return p;
+            } else {
+                self.board.removeObject(p);
+            }
         })
     }
 
