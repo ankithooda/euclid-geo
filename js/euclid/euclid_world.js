@@ -120,7 +120,7 @@ function EuclidWorld() {
             );
             return p;
         }
-        var l = Arena.line(p1, p2);
+        var l = line(p1, p2);
         self.circles.forEach(function(circle) {
             let radius = Cartesian.distance(circle.center, circle.point2);
             if (Cartesian.eqWithTolerance(
