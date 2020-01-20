@@ -1,5 +1,6 @@
 const Arena = require("./jxg_arena");
-const Eq = require("../logic/eq");
+const LogicWorld = require("../logic/logic_world");
+const _ = require("lodash");
 
 function EuclidWorld() {
     var self = this;
@@ -45,6 +46,7 @@ function EuclidWorld() {
         var l = Arena.lineSegment(p1, p2);
         if (l !== undefined) {
             Arena.intersection(l);
+            _handleLineCreation(l);
         }
         return l;
     }
@@ -53,8 +55,86 @@ function EuclidWorld() {
         let c = Arena.circle(center, boundaryPoint);
         if (c !== undefined) {
             Arena.intersection(c);
+            // console.log(Arena.board.objects);
+            _handleCircleCreation(c);
         }
         return c;
+    }
+
+    function _handleCircleCreation(c) {
+        let center = c.center;
+        let boundaryPointId = c.parents.filter((p) => {return p !== center.id})[0];
+
+        console.log("bp", center.id, boundaryPointId);
+
+        // Explictly create line of the main radius
+        LogicWorld.createLine(center.id, boundaryPointId);
+
+        // Get line objects present on the board.
+        let lines = Object.keys(Arena.board.objects).filter((objKey) => {
+            return Arena.board.objects[objKey].elType === "line";
+        });
+        console.log("lines", lines);
+
+        // Check for each child element i.e child points
+        // if it is a part of any line on board.
+
+        Object.keys(c.childElements).forEach((ce) => {
+            lines.forEach((key) => {
+                let line = Arena.board.objects[key];
+                let parents = line.parents;
+                let childElement = c.childElements[ce];
+
+                console.log("the line ", line);
+
+                console.log("comp", parents, childElement.id, center.id);
+                if (_.includes(parents, childElement.id) && _.includes(parents, center.id)) {
+                    console.log("are we in here");
+                    LogicWorld.liesOnCircle(center.id, boundaryPointId, childElement.id);
+                }
+            });
+        }); 
+    }
+
+    function _handleLineCreation(l) {
+        let p1 = l.parents[0];
+        let p2 = l.parents[1];
+
+        console.log("creation of line", l.parents[0], l.parents[1]);
+
+        // Update identity relation of line
+        LogicWorld.createLine(p1, p2);
+
+        // TODO: intersection with a line
+
+        // handle line-circle intersection
+
+        // Get circle objects on the board
+        let circles = Object.keys(Arena.board.objects).filter((objKey) => {
+            return Arena.board.objects[objKey].elType === "circle";
+        });
+
+        circles.forEach((key) => {
+            let circle = Arena.board.objects[key];
+            console.log("circle child elem", circle.childElements);
+            let circleChildren = Object.keys(circle.childElements).map((ce) => {return ce});
+            let circleCenter = circle.center.id;
+            let circleBP = circle.parents.filter((p) => {return p !== circleCenter})[0];
+
+            console.log(circleChildren, p1, p2, circleCenter);
+            if (
+                _.includes([p1, p2], circleCenter) && 
+                (_.includes(circleChildren, p1) || _.includes(circleChildren, p2))
+            ) {
+                let lineBP = p1 === circleCenter ? p2 : p1;
+                LogicWorld.liesOnCircle(circleCenter, circleBP, lineBP);
+            }
+        });
+
+    }
+
+    function _fetchLine(logicRepr) {
+
     }
 
     return {
