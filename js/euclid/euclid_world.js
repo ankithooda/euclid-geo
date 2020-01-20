@@ -47,6 +47,7 @@ function EuclidWorld() {
         if (l !== undefined) {
             Arena.intersection(l);
             _handleLineCreation(l);
+            _displayEquiClasses();
         }
         return l;
     }
@@ -57,6 +58,7 @@ function EuclidWorld() {
             Arena.intersection(c);
             // console.log(Arena.board.objects);
             _handleCircleCreation(c);
+            _displayEquiClasses();
         }
         return c;
     }
@@ -133,8 +135,34 @@ function EuclidWorld() {
 
     }
 
-    function _fetchLine(logicRepr) {
+    function _displayEquiClasses() {
+        let equiClasses = LogicWorld.getEquiClasses();
 
+        let colors = [
+            "#FF0000",
+            "#000000",
+            "#00FF00",
+            "#FFFF00",
+            "#00FF00"
+        ]
+        let colorIndex = 0;
+
+        equiClasses.forEach((klass) => {
+            let klassColor = colors[colorIndex] || "#0000FF";
+            klass.forEach((line) => {
+                let p1 = line[0];
+                let p2 = line[1];
+                Object.keys(Arena.board.objects).forEach(function(objKey) {
+                    let obj = Arena.board.objects[objKey];
+                    if (obj.elType === "line" && _.includes(obj.parents, p1) && _.includes(obj.parents, p2)) {
+                        obj.setAttribute({
+                            strokeColor: klassColor
+                        });
+                    }
+                });
+            });
+            colorIndex++;
+        });
     }
 
     return {

@@ -6,6 +6,10 @@ function LogicWorld() {
         return p1 + "-" + p2;
     }
 
+    function _unpair(pair) {
+        return pair.split("-");
+    }
+
     function liesOnCircle(c, p1, p2) {
         EqRelation.hold(
             _getPair(c, p1),
@@ -19,9 +23,17 @@ function LogicWorld() {
         EqRelation.debug();
     }
 
+    function getEquiClasses() {
+        EqRelation.gc();
+        return EqRelation.getAll().map((klass) => {
+            return Object.keys(klass).map((thing) => {return _unpair(thing)});
+        });
+    }
+
     return {
         liesOnCircle: liesOnCircle,
-        createLine: createLine
+        createLine: createLine,
+        getEquiClasses: getEquiClasses
     }
 }
 
