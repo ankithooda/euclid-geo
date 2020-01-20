@@ -96,6 +96,20 @@ function JXGArena() {
         }
     }
 
+    function getAllPointsOnCircle(circle) {
+        var childElements = Object.keys(circle.childElements);
+        var center = circle.center.id;
+        var boundary;
+        for(var point in circle.ancestors) {
+            if(point !== center) {
+                boundary = point;
+                break;
+            }
+        }
+        childElements.push(boundary);
+        return childElements;
+    }
+
     function intersection(g1) {
         var eligibleElements = ["line", "segment", "circle"];
         var intersectionPoints = [];
@@ -134,6 +148,7 @@ function JXGArena() {
         lineSegment: lineSegment,
         extendLineSegment: extendLineSegment,
         circle: circle,
+        getAllPointsOnCircle: getAllPointsOnCircle,
         intersection: intersection,
         button: button,
         board: self.board
