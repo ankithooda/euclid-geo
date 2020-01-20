@@ -20,7 +20,7 @@ function EuclidWorld() {
             i = 0;
         }
         var coords = getMouseCoords(e, i);
-        point(coords.usrCoords[1], coords.usrCoords[2]);
+        point(coords);
     };
     Arena.board.on('down', down);
 
@@ -30,8 +30,8 @@ function EuclidWorld() {
         Arena.button(x, y, text, fun);
     }
 
-    function point(x, y) {
-        return Arena.point(x, y);
+    function point(coords) {
+        return Arena.point(coords);
     }
 
     function line(p1, p2) {
@@ -63,10 +63,13 @@ function EuclidWorld() {
         return c;
     }
 
+    function extendLineSegment(p1, p2, endToExtend) {
+        Arena.extendLineSegment(p1, p2, endToExtend);
+    }
+
     function _handleCircleCreation(c) {
         let center = c.center;
         let boundaryPointId = c.parents.filter((p) => {return p !== center.id})[0];
-
         console.log("bp", center.id, boundaryPointId);
 
         // Explictly create line of the main radius
@@ -171,6 +174,7 @@ function EuclidWorld() {
         line: line,
         circle: circle,
         lineSegment: lineSegment,
+        extendLineSegment: extendLineSegment,
     }
 }
 

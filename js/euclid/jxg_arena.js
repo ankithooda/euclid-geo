@@ -19,16 +19,16 @@ function JXGArena() {
         var button1 = self.board.create('button', [x, y, text, fun], {});
     }
 
-    function point(x, y) {
+    function point(coords) {
         var canCreate = true;
         for (var el in self.board.objects) {
-            if(JXG.isPoint(self.board.objects[el]) && self.board.objects[el].hasPoint(x, y)) {
+            if(JXG.isPoint(self.board.objects[el]) && self.board.objects[el].hasPoint(coords.scrCoords[1], coords.scrCoords[2])) {
                 canCreate = false;
                 break;
             }
         }
         if (canCreate) {
-            return self.board.create('point', [x, y]);
+            return self.board.create('point', [coords.usrCoords[1], coords.usrCoords[2]]);
         }
     }
 
@@ -38,7 +38,7 @@ function JXGArena() {
         var endId = self.board.elementsByName[end].id;
         for (var el in self.board.objects) {
             var object = self.board.objects[el];
-            if(object.elType === type && object.ancestors[startId] !== undefined && object.ancestors[endId] !== undefined) {
+            if(object.elType === type && object.parents.includes(startId) && object.parents.includes(endId)) {
                 canCreate = false;
                 break;
             }
@@ -58,6 +58,27 @@ function JXGArena() {
         }
     }
 
+    function extendLineSegment(p1, p2, endToExtend) {
+        var p1Id = self.board.elementsByName[p1].id;
+        var p2Id = self.board.elementsByName[p2].id;
+        var endToExtendId = self.board.elementsByName[endToExtend].id;
+        if (p1Id !== undefined && p2Id !== undefined && endToExtendId !== undefined)
+        for (var el in self.board.objects) {
+            var object = self.board.objects[el];
+            if(object.elType === "line" && object.ancestors[p1Id] !== undefined && object.ancestors[p2Id] !== undefined) {
+                var straightFirst = object.visProp.straightfirst;
+                var straightLast = object.visProp.straightlast;
+                if (object.point1.id === endToExtendId) {
+                    object.setStraight(true, straightLast)
+                } else if (object.point2.id === endToExtendId) {
+                    object.setStraight(straightFirst, true)
+                }
+                break;
+            }
+        }
+
+    }
+
     function circle(center, boundaryPoint) {
         var canCreate = true;
         var centerId = self.board.elementsByName[center].id;
@@ -65,7 +86,7 @@ function JXGArena() {
         for (var el in self.board.objects) {
             var object = self.board.objects[el];
             if(object.elType === "circle" && object.center.id === centerId
-                && (object.ancestors[boundaryPointId] !== undefined || object.childElements[boundaryPointId] !== undefined)) {
+                && (object.parents.includes(boundaryPoint) || object.ancestors[boundaryPointId] !== undefined || object.childElements[boundaryPointId] !== undefined)) {
                 canCreate = false;
                 break;
             }
@@ -73,6 +94,20 @@ function JXGArena() {
         if (canCreate) {
             return self.board.create("circle", [center, boundaryPoint], {dash:2});
         }
+    }
+
+    function getAllPointsOnCircle(circle) {
+        var childElements = Object.keys(circle.childElements);
+        var center = circle.center.id;
+        var boundary;
+        for(var point in circle.ancestors) {
+            if(point !== center) {
+                boundary = point;
+                break;
+            }
+        }
+        childElements.push(boundary);
+        return childElements;
     }
 
     function intersection(g1) {
@@ -111,7 +146,9 @@ function JXGArena() {
         point: point,
         line: line,
         lineSegment: lineSegment,
+        extendLineSegment: extendLineSegment,
         circle: circle,
+        getAllPointsOnCircle: getAllPointsOnCircle,
         intersection: intersection,
         button: button,
         board: self.board
