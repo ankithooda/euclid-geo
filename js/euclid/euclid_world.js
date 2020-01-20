@@ -20,7 +20,7 @@ function EuclidWorld() {
             i = 0;
         }
         var coords = getMouseCoords(e, i);
-        point(coords.usrCoords[1], coords.usrCoords[2]);
+        point(coords);
     };
     Arena.board.on('down', down);
 
@@ -30,8 +30,8 @@ function EuclidWorld() {
         Arena.button(x, y, text, fun);
     }
 
-    function point(x, y) {
-        return Arena.point(x, y);
+    function point(coords) {
+        return Arena.point(coords);
     }
 
     function line(p1, p2) {
@@ -67,12 +67,17 @@ function EuclidWorld() {
         return c;
     }
 
+    function extendLineSegment(p1, p2, endToExtend) {
+        Arena.extendLineSegment(p1, p2, endToExtend);
+    }
+
     return {
         button: button,
         point: point,
         line: line,
         circle: circle,
         lineSegment: lineSegment,
+        extendLineSegment: extendLineSegment,
     }
 }
 

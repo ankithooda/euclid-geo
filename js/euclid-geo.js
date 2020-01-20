@@ -22,15 +22,15 @@ input.addEventListener("keyup", function(event) {
 
 
 function dslHandler(text) {
-    let source = text.split(" ");
-    let command = source[0].toUpperCase();
-    let p1 = source[1].toUpperCase();
-    let p2 = source[2].toUpperCase();
+    let source = text.split(" ").map(function(item) {
+        return item.toUpperCase()
+    });
 
-    switch(command) {
-        case "CIRCLE": EuclidWorld.circle(p1, p2); break;
-        case "LINE": EuclidWorld.line(p1, p2); break;
-        case "SEGMENT": EuclidWorld.lineSegment(p1, p2); break;
+    switch(source[0]) {
+        case "CIRCLE": EuclidWorld.circle(source[1], source[2]); break;
+        case "LINE": EuclidWorld.line(source[1], source[2]); break;
+        case "SEGMENT": EuclidWorld.lineSegment(source[1], source[2]); break;
+        case "EXTEND": EuclidWorld.extendLineSegment(source[1], source[2], source[3]); break;
         default: ;
     }
 }
