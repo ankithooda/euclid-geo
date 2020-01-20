@@ -38,7 +38,7 @@ function JXGArena() {
         var endId = self.board.elementsByName[end].id;
         for (var el in self.board.objects) {
             var object = self.board.objects[el];
-            if(object.elType === type && object.ancestors[startId] !== undefined && object.ancestors[endId] !== undefined) {
+            if(object.elType === type && object.parents.includes(startId) && object.parents.includes(endId)) {
                 canCreate = false;
                 break;
             }
@@ -86,7 +86,7 @@ function JXGArena() {
         for (var el in self.board.objects) {
             var object = self.board.objects[el];
             if(object.elType === "circle" && object.center.id === centerId
-                && (object.ancestors[boundaryPointId] !== undefined || object.childElements[boundaryPointId] !== undefined)) {
+                && (object.parents.includes(boundaryPoint) || object.ancestors[boundaryPointId] !== undefined || object.childElements[boundaryPointId] !== undefined)) {
                 canCreate = false;
                 break;
             }
