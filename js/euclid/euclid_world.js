@@ -67,6 +67,13 @@ function EuclidWorld() {
         Arena.extendLineSegment(p1, p2, endToExtend);
     }
 
+    function angle(p1, p2, p3) {
+        var p1Object = Arena.board.elementsByName[p1];
+        var p2Object = Arena.board.elementsByName[p2];
+        var p3Object = Arena.board.elementsByName[p3];
+        console.log(Arena.angle(p1Object, p2Object, p3Object));
+    }
+
     function _handleCircleCreation(c) {
         let center = c.center;
         let boundaryPointId = c.parents.filter((p) => {return p !== center.id})[0];
@@ -176,6 +183,7 @@ function EuclidWorld() {
         circle: circle,
         lineSegment: lineSegment,
         extendLineSegment: extendLineSegment,
+        angle: angle,
     }
 }
 

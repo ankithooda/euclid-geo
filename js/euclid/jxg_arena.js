@@ -2,6 +2,8 @@
 // Arena.board.objects: dict: key: id.
 // Arena.board.objectsList: list: in order of creation
 
+const _ = require("lodash");
+
 function JXGArena() {
     var self = this;
     self.board = JXG.JSXGraph.initBoard(
@@ -128,6 +130,7 @@ function JXGArena() {
                     }
                     if(canCreate) {
                         intersectionPoints.push(p);
+                        _angle(g1, g2, p);
                     } else {
                         self.board.removeObject(p);
                     }
@@ -135,6 +138,24 @@ function JXGArena() {
             }
         }
         return intersectionPoints;
+    }
+
+    function _angle(o1, o2, intersection) {
+        if(o1.elType === "line" && o2.elType === "line") {
+            var o1Parents = o1.parents;
+            var o2Parents = o2.parents;
+            o1Parents.forEach((p1) => {
+                var p1Object = self.board.objects[p1];
+                o2Parents.forEach((p2) => {
+                    var p2Object = self.board.objects[p2];
+                    angle(p1Object, intersection, p2Object);
+                });
+            });
+        }
+    }
+
+    function angle(p1, p2, p3) {
+        return self.board.create("angle", [p1, p2, p3], {radius: 3});
     }
 
     function button(x, y, label, handler) {
@@ -150,6 +171,7 @@ function JXGArena() {
         circle: circle,
         getAllPointsOnCircle: getAllPointsOnCircle,
         intersection: intersection,
+        angle: angle,
         button: button,
         board: self.board
     }
