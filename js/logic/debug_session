@@ -1,0 +1,23 @@
+
+eq = new require("./js/logic/eq")();
+
+comp = new require("./js/logic/composition")();
+
+eq.hold("AB", "AC");
+eq.hold("BC", "BC");
+
+eq.hold("AE", "AE");
+eq.hold("BE", "BE");
+
+comp.hold(eq, "AE", ["AB", "BE"]);
+
+
+eq.hold("AF", "AF");
+eq.hold("CF", "CF");
+eq.hold("BE", "CF")
+
+comp.hold(eq, "AF", ["AC", "CF"]);
+
+eq.getEqual("AF");
+
+

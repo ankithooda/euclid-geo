@@ -1,129 +1,154 @@
-const GraphicsWrapper = require("./graphics_wrapper");
-const Primitives = require("./primitives");
-const CartesianWorld = require("../descartes/cartesian_world");
+const Arena = require("./jxg_arena");
+const Eq = require("../logic/eq");
+const Cartesian = require("../../util/cartesian")
 
 function EuclidWorld() {
-    this.pointCounter = 0;
-    this.lineCounter = 0;
-    this.circleCounter = 0;
-
-    var GWObject = new GraphicsWrapper();
-    this.primitives = new Primitives(GWObject);
-    this.CartesianWorld = new CartesianWorld();
-    console.log("Cartesian World", this.CartesianWorld);
-
-}
-
-EuclidWorld.prototype.addPoint = function(x, y, label) {
     var self = this;
-    label = label || "P_" + this.pointCounter;
-    self.pointCounter++;
 
-    var point = self.primitives.point(x, y, label);
-    self.CartesianWorld.addPoint(point).forEach(function(cartesianPoint) {
-        var newPoint = self.primitives.point(
-            cartesianPoint.x,
-            cartesianPoint.y,
-            cartesianPoint.label
-        );
-        newPoint.render();
-    });
-    point.render();
-    return point;
-}
+    var getMouseCoords = function(e, i) {
+        var cPos = Arena.board.getCoordsTopLeftCorner(e, i),
+            absPos = JXG.getPosition(e, i),
+            dx = absPos[0]-cPos[0],
+            dy = absPos[1]-cPos[1];
 
-EuclidWorld.prototype.addCircle = function(center, boundaryPoint, label) {
-    var self = this;
-    label = label || "C_" + this.circleCounter;
-    this.circleCounter++;
+        return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], Arena.board);
+    };
+    var down = function(e) {
+        var i;
+        if (e[JXG.touchProperty]) {
+            // index of the finger that is used to extract the coordinates
+            i = 0;
+        }
+        var coords = getMouseCoords(e, i);
+        point(coords);
+    };
+    Arena.board.on('down', down);
 
-    var circle = this.primitives.circle(center, boundaryPoint, label);
-    this.CartesianWorld.addCircle(circle).forEach(function(cartesianPoint) {
-        var point = self.primitives.point(
-            cartesianPoint.x,
-            cartesianPoint.y,
-            cartesianPoint.label
-        );
-        point.render();
-    });
-    circle.render();
-    return circle;
-}
+    // Export Functions
 
-EuclidWorld.prototype.addLine = function(point1, point2, label) {
-    var self = this;
-    label = label || "L_" + this.lineCounter;
-    this.lineCounter++;
+    function button(x, y, text, fun) {
+        Arena.button(x, y, text, fun);
+    }
 
-    var line = this.primitives.line(point1, point2, label);
-    this.CartesianWorld.addLine(line).forEach(function(cartesianPoint) {
-        var point = self.primitives.point(
-            cartesianPoint.x,
-            cartesianPoint.y,
-            cartesianPoint.label
-        );
-        point.render();
-    });
-    line.render();
-    return line;
-}
+    function point(coords) {
+        return Arena.point(coords);
+    }
 
-EuclidWorld.prototype.convertToEuclidean = function(cartesianPoint) {
-    return this.primitives.point(
-        cartesianPoint.x,
-        cartesianPoint.y,
-        cartesianPoint.label
-    );
+    function line(p1, p2) {
+        let l = Arena.line(p1, p2);
+        if (l !== undefined) {
+            Arena.intersection(l);
+        }
+        console.log(Arena.board.elementsByName);
+        console.log(Arena.board.objects);
+        console.log(Arena.board.objectsList);
+        return l;
+    }
+
+    function lineSegment(p1, p2) {
+        var l = Arena.lineSegment(p1, p2);
+        if (l !== undefined) {
+            Arena.intersection(l);
+        }
+        console.log(Arena.board.elementsByName);
+        console.log(Arena.board.objects);
+        console.log(Arena.board.objectsList);
+        return l;
+    }
+
+    function circle(center, boundaryPoint) {
+        let c = Arena.circle(center, boundaryPoint);
+        if (c !== undefined) {
+            Arena.intersection(c);
+        }
+        console.log(Arena.board.elementsByName);
+        console.log(Arena.board.objects);
+        console.log(Arena.board.objectsList);
+        return c;
+    }
+
+    function extendLineSegment(p1, p2, endToExtend) {
+        Arena.extendLineSegment(p1, p2, endToExtend);
+    }
+
+    return {
+        button: button,
+        point: point,
+        line: line,
+        circle: circle,
+        lineSegment: lineSegment,
+        extendLineSegment: extendLineSegment,
+    }
 }
 
 // Testing Function
 function start() {
-    var ew = new EuclidWorld();
+    // var a1 = Arena.point(1, 1);
+    // var a2 = Arena.point(-1, -1);
 
-    // var a = ew.addPoint(0, 0);
-    // var b = ew.addPoint(3, 3);
-    // var c = ew.addPoint(2, 2);
-    // var d = ew.addPoint(3, 0);
+    // Arena.line(a1, a2);
+    // Arena.circle(a1, a2); 
+    var euclid = new EuclidWorld();
 
-    // var line1 = ew.addLine(b, c);
+    // var a1 = euclid.point(0, 0);
+    // var a2 = euclid.point(3, 0);
+    // euclid.lineSegment(a1, a2);
+    // euclid.circle(a1, a2);
+    // euclid.circle(a2, a1);
 
-    // var circle = ew.addCircle(a, c);
-    // var circle2 = ew.addCircle(b, d);
+    // var a3 = euclid.points["C"];
+    // var a4 = euclid.points["D"];
 
-    // var e = ew.addPoint(-10, -10);
-    // var f = ew.addPoint(10, 10);
-    // var longLine = ew.addLine(e, f);
+    // euclid.lineSegment(a3, a1);
+    // euclid.lineSegment(a3, a2);
 
-    // a.render();
-    // b.render();
-    // c.render();
-    // d.render();
-    // e.render();
-    // f.render();
-    // line1.render();
-    // circle.render();
-    // circle2.render();
-    // longLine.render();
+    // testing buttons
+//    var a5 = euclid.point(10, 10);
+//    var a6 = euclid.point(12, 12);
+//    var fun = function() {
+//        euclid.circle(a5, a6);;
+//    }
+//    var button1 = euclid.button(5, 5, 'Draw Circle', fun)
 
-    var a = ew.addPoint(0, 0);
-    var b = ew.addPoint(1, 1);
-    var c = ew.addPoint(0, 1);
-    var d = ew.addPoint(1, 0);
-    var e = ew.addPoint(-2, 2);
-    var f = ew.addPoint(2, -2);
+    // var c1 = euclid.circle(a1, a2);
+    // var c2 = euclid.circle(a2, a1);
+
+    // var a3 = euclid.points["C"];
+    // console.log(c1.hasPoint(a2));
+    // console.log(c1);
+    // console.log(c1.hasPoint(a1));
+    // euclid.lineSegment(a1, a3);
+    // euclid.lineSegment(a1, a2);
+    // euclid.lineSegment(a2, a3);
+
+    // var a4 = euclid.points["D"];
+    // // euclid.lineSegment(a1, a4);
+
+    // var a = euclid.point(0, 0);
+    // var b = euclid.point(2, 2);
+    // var c = euclid.point(1, 5);
 
 
-    var c1 = ew.addCircle(a, b);
-    var c2 = ew.addCircle(a, c);
-    var c3 = ew.addCircle(d, b);
 
-    ew.addLine(e, f);
+    // var bc = euclid.lineSegment(b, c);
+    // var ab = euclid.lineSegment(a, b);
 
-    // var l1 = ew.addLine(a, c);
-    // var l2 = ew.addLine(b, d);
-    // var l3 = ew.addLine(e, f);
-    // ew.addLine(g, b);
-    
+    // var c_ab = euclid.circle(a, b);
+    // var c_ba = euclid.circle(b, a);
+
+    // var d = euclid.points["D"];
+    // var da = euclid.lineSegment(d, a);
+    // var db = euclid.lineSegment(d, b);
+
+    // euclid.line(d, a);
+    // euclid.line(d, b);
+
+    // var f = euclid.points["F"];
+    // var c_bf = euclid.circle(b, f);
+    // var c_df = euclid.circle(d, f);
+
+    // euclid.debug();
+    // console.log(euclid.getAllEquiClass());
 }
 
-module.exports = start;
+module.exports = new EuclidWorld();
