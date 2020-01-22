@@ -1,6 +1,6 @@
 const Arena = require("./jxg_arena");
-const Eq = require("../logic/eq");
-const Cartesian = require("../../util/cartesian")
+const LogicWorld = require("../logic/logic_world");
+const _ = require("lodash");
 
 function EuclidWorld() {
     var self = this;
@@ -39,9 +39,6 @@ function EuclidWorld() {
         if (l !== undefined) {
             Arena.intersection(l);
         }
-        console.log(Arena.board.elementsByName);
-        console.log(Arena.board.objects);
-        console.log(Arena.board.objectsList);
         return l;
     }
 
@@ -49,10 +46,9 @@ function EuclidWorld() {
         var l = Arena.lineSegment(p1, p2);
         if (l !== undefined) {
             Arena.intersection(l);
+            _handleLineCreation(l);
+            _displayEquiClasses();
         }
-        console.log(Arena.board.elementsByName);
-        console.log(Arena.board.objects);
-        console.log(Arena.board.objectsList);
         return l;
     }
 
@@ -60,15 +56,117 @@ function EuclidWorld() {
         let c = Arena.circle(center, boundaryPoint);
         if (c !== undefined) {
             Arena.intersection(c);
+            // console.log(Arena.board.objects);
+            _handleCircleCreation(c);
+            _displayEquiClasses();
         }
-        console.log(Arena.board.elementsByName);
-        console.log(Arena.board.objects);
-        console.log(Arena.board.objectsList);
         return c;
     }
 
     function extendLineSegment(p1, p2, endToExtend) {
         Arena.extendLineSegment(p1, p2, endToExtend);
+    }
+
+    function _handleCircleCreation(c) {
+        let center = c.center;
+        let boundaryPointId = c.parents.filter((p) => {return p !== center.id})[0];
+
+        console.log("bp", center.id, boundaryPointId);
+
+        // Explictly create line of the main radius
+        LogicWorld.createLine(center.id, boundaryPointId);
+
+        // Get line objects present on the board.
+        let lines = Object.keys(Arena.board.objects).filter((objKey) => {
+            return Arena.board.objects[objKey].elType === "line";
+        });
+        console.log("lines", lines);
+
+        // Check for each child element i.e child points
+        // if it is a part of any line on board.
+
+        Object.keys(c.childElements).forEach((ce) => {
+            lines.forEach((key) => {
+                let line = Arena.board.objects[key];
+                let parents = line.parents;
+                let childElement = c.childElements[ce];
+
+                console.log("the line ", line);
+
+                console.log("comp", parents, childElement.id, center.id);
+                if (_.includes(parents, childElement.id) && _.includes(parents, center.id)) {
+                    console.log("are we in here");
+                    LogicWorld.liesOnCircle(center.id, boundaryPointId, childElement.id);
+                }
+            });
+        }); 
+    }
+
+    function _handleLineCreation(l) {
+        let p1 = l.parents[0];
+        let p2 = l.parents[1];
+
+        console.log("creation of line", l.parents[0], l.parents[1]);
+
+        // Update identity relation of line
+        LogicWorld.createLine(p1, p2);
+
+        // TODO: intersection with a line
+
+        // handle line-circle intersection
+
+        // Get circle objects on the board
+        let circles = Object.keys(Arena.board.objects).filter((objKey) => {
+            return Arena.board.objects[objKey].elType === "circle";
+        });
+
+        circles.forEach((key) => {
+            let circle = Arena.board.objects[key];
+            console.log("circle child elem", circle.childElements);
+            let circleChildren = Object.keys(circle.childElements).map((ce) => {return ce});
+            let circleCenter = circle.center.id;
+            let circleBP = circle.parents.filter((p) => {return p !== circleCenter})[0];
+
+            console.log(circleChildren, p1, p2, circleCenter);
+            if (
+                _.includes([p1, p2], circleCenter) && 
+                (_.includes(circleChildren, p1) || _.includes(circleChildren, p2))
+            ) {
+                let lineBP = p1 === circleCenter ? p2 : p1;
+                LogicWorld.liesOnCircle(circleCenter, circleBP, lineBP);
+            }
+        });
+
+    }
+
+    function _displayEquiClasses() {
+        let equiClasses = LogicWorld.getEquiClasses();
+
+        let colors = [
+            "#FF0000",
+            "#000000",
+            "#00FF00",
+            "#FFFF00",
+            "#00FF00"
+        ]
+        let colorIndex = 0;
+
+        equiClasses.forEach((klass) => {
+            let klassColor = colors[colorIndex] || "#0000FF";
+            klass.forEach((line) => {
+                let p1 = line[0];
+                let p2 = line[1];
+                Object.keys(Arena.board.objects).forEach(function(objKey) {
+                    let obj = Arena.board.objects[objKey];
+                    if (obj.elType === "line" && _.includes(obj.parents, p1) && _.includes(obj.parents, p2)) {
+                        obj.setAttribute({
+                            strokeColor: klassColor
+                        });
+                    }
+                });
+            });
+            colorIndex++;
+        });
     }
 
     return {
@@ -81,74 +179,5 @@ function EuclidWorld() {
     }
 }
 
-// Testing Function
-function start() {
-    // var a1 = Arena.point(1, 1);
-    // var a2 = Arena.point(-1, -1);
-
-    // Arena.line(a1, a2);
-    // Arena.circle(a1, a2); 
-    var euclid = new EuclidWorld();
-
-    // var a1 = euclid.point(0, 0);
-    // var a2 = euclid.point(3, 0);
-    // euclid.lineSegment(a1, a2);
-    // euclid.circle(a1, a2);
-    // euclid.circle(a2, a1);
-
-    // var a3 = euclid.points["C"];
-    // var a4 = euclid.points["D"];
-
-    // euclid.lineSegment(a3, a1);
-    // euclid.lineSegment(a3, a2);
-
-    // testing buttons
-//    var a5 = euclid.point(10, 10);
-//    var a6 = euclid.point(12, 12);
-//    var fun = function() {
-//        euclid.circle(a5, a6);;
-//    }
-//    var button1 = euclid.button(5, 5, 'Draw Circle', fun)
-
-    // var c1 = euclid.circle(a1, a2);
-    // var c2 = euclid.circle(a2, a1);
-
-    // var a3 = euclid.points["C"];
-    // console.log(c1.hasPoint(a2));
-    // console.log(c1);
-    // console.log(c1.hasPoint(a1));
-    // euclid.lineSegment(a1, a3);
-    // euclid.lineSegment(a1, a2);
-    // euclid.lineSegment(a2, a3);
-
-    // var a4 = euclid.points["D"];
-    // // euclid.lineSegment(a1, a4);
-
-    // var a = euclid.point(0, 0);
-    // var b = euclid.point(2, 2);
-    // var c = euclid.point(1, 5);
-
-
-
-    // var bc = euclid.lineSegment(b, c);
-    // var ab = euclid.lineSegment(a, b);
-
-    // var c_ab = euclid.circle(a, b);
-    // var c_ba = euclid.circle(b, a);
-
-    // var d = euclid.points["D"];
-    // var da = euclid.lineSegment(d, a);
-    // var db = euclid.lineSegment(d, b);
-
-    // euclid.line(d, a);
-    // euclid.line(d, b);
-
-    // var f = euclid.points["F"];
-    // var c_bf = euclid.circle(b, f);
-    // var c_df = euclid.circle(d, f);
-
-    // euclid.debug();
-    // console.log(euclid.getAllEquiClass());
-}
 
 module.exports = new EuclidWorld();
