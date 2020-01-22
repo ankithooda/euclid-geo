@@ -31,6 +31,7 @@ function dslHandler(text) {
         case "LINE": EuclidWorld.line(source[1], source[2]); break;
         case "SEGMENT": EuclidWorld.lineSegment(source[1], source[2]); break;
         case "EXTEND": EuclidWorld.extendLineSegment(source[1], source[2], source[3]); break;
+        case "ANGLE": EuclidWorld.angle(source[1], source[2], source[3]); break;
         default: ;
     }
 }
