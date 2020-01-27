@@ -116,8 +116,8 @@ function EuclidWorld() {
         let l = Arena.board.objects[lineId];
         let p1 = l.point1;
         let p2 = l.point2;
-        // pointLineIncidence.add(p1.id, l.id);
-        // pointLineIncidence.add(p2.id, l.id);
+        pointLineIncidence.add(p1.id, l.id);
+        pointLineIncidence.add(p2.id, l.id);
 
         let slope = CartesianUtils.lineSlope(p1.X(), p1.Y(), p2.X(), p2.Y());
 
@@ -140,10 +140,11 @@ function EuclidWorld() {
             return Arena.board.objects[objKey].elType === "circle";
         }).forEach((key) => {
             let circle = Arena.board.objects[key];
+            let center = circle.center;
             let points = pointCircleIncidence.get(circle.id);
             console.log("incidennce ", circle.id, points);
             points.forEach((pId, idx, allPoints) => {
-                LogicWorld.liesOnCircle(circle.id, allPoints[0], pId);                
+                LogicWorld.liesOnCircle(center.id, allPoints[0], pId);                
             });
         });        
     }
