@@ -1,9 +1,13 @@
 const Arena = require("./jxg_arena");
 const LogicWorld = require("../logic/logic_world");
 const _ = require("lodash");
+const Incidence = require("./incidence_structure");
+const CartesianUtils = require("../../util/cartesian");
 
 function EuclidWorld() {
     var self = this;
+    var pointLineIncidence = new Incidence();
+    var pointCircleIncidence = new Incidence();
 
     var getMouseCoords = function(e, i) {
         var cPos = Arena.board.getCoordsTopLeftCorner(e, i),
@@ -46,8 +50,11 @@ function EuclidWorld() {
         var l = Arena.lineSegment(p1, p2);
         if (l !== undefined) {
             Arena.intersection(l);
-            _handleLineCreation(l);
+            _updateIncidenceMatrix();
+            _updateEquiClasses();
             _displayEquiClasses();
+            pointCircleIncidence.debug();
+            pointLineIncidence.debug();
         }
         return l;
     }
@@ -56,9 +63,11 @@ function EuclidWorld() {
         let c = Arena.circle(center, boundaryPoint);
         if (c !== undefined) {
             Arena.intersection(c);
-            // console.log(Arena.board.objects);
-            _handleCircleCreation(c);
+            _updateIncidenceMatrix();
+            _updateEquiClasses();
             _displayEquiClasses();
+            pointCircleIncidence.debug();
+            pointLineIncidence.debug();
         }
         return c;
     }
@@ -74,86 +83,79 @@ function EuclidWorld() {
         console.log(Arena.angle(p1Object, p2Object, p3Object));
     }
 
-    function _handleCircleCreation(c) {
-        let center = c.center;
-        let boundaryPointId = c.parents.filter((p) => {return p !== center.id})[0];
+    function _updateIncidenceMatrix() {
+        Object.keys(Arena.board.objects).filter((objKey) => {
+            return Arena.board.objects[objKey].elType === "circle";
+        }).forEach(_updateIncidenceMatrixCircle);
 
-        console.log("bp", center.id, boundaryPointId);
-
-        // Explictly create line of the main radius
-        LogicWorld.createLine(center.id, boundaryPointId);
-
-        // Get line objects present on the board.
-        let lines = Object.keys(Arena.board.objects).filter((objKey) => {
+        Object.keys(Arena.board.objects).filter((objKey) => {
             return Arena.board.objects[objKey].elType === "line";
-        });
-        console.log("lines", lines);
-
-        // Check for each child element i.e child points
-        // if it is a part of any line on board.
-
-        Object.keys(c.childElements).forEach((ce) => {
-            lines.forEach((key) => {
-                let line = Arena.board.objects[key];
-                let parents = line.parents;
-                let childElement = c.childElements[ce];
-
-                console.log("the line ", line);
-
-                console.log("comp", parents, childElement.id, center.id);
-                if (_.includes(parents, childElement.id) && _.includes(parents, center.id)) {
-                    console.log("are we in here");
-                    LogicWorld.liesOnCircle(center.id, boundaryPointId, childElement.id);
-                }
-            });
-        }); 
+        }).forEach(_updateIncidenceMatrixLine);
     }
 
-    function _handleLineCreation(l) {
-        let p1 = l.parents[0];
-        let p2 = l.parents[1];
+    function _updateIncidenceMatrixCircle(circleId) {
+        let c = Arena.board.objects[circleId];
+        let center = c.center;
+        let ancestors = _.values(c.ancestors);
+        let boundaryPoint = center.id === ancestors[0].id ? ancestors[1] : ancestors[0];
 
-        console.log("creation of line", l.parents[0], l.parents[1]);
+        let radius = CartesianUtils.distance(center, boundaryPoint);
 
-        // Update identity relation of line
-        LogicWorld.createLine(p1, p2);
-
-        // TODO: intersection with a line
-
-        // handle line-circle intersection
-
-        // Get circle objects on the board
-        let circles = Object.keys(Arena.board.objects).filter((objKey) => {
-            return Arena.board.objects[objKey].elType === "circle";
-        });
-
-        circles.forEach((key) => {
-            let circle = Arena.board.objects[key];
-            console.log("circle child elem", circle.childElements);
-            let circleChildren = Object.keys(circle.childElements).map((ce) => {return ce});
-            let circleCenter = circle.center.id;
-            let circleBP = circle.parents.filter((p) => {return p !== circleCenter})[0];
-
-            console.log(circleChildren, p1, p2, circleCenter);
-            if (
-                _.includes([p1, p2], circleCenter) && 
-                (_.includes(circleChildren, p1) || _.includes(circleChildren, p2))
-            ) {
-                let lineBP = p1 === circleCenter ? p2 : p1;
-                LogicWorld.liesOnCircle(circleCenter, circleBP, lineBP);
+        Object.keys(Arena.board.objects).filter((objKey) => {
+            return Arena.board.objects[objKey].elType === "point";
+        }).forEach((key) => {
+            let p = Arena.board.objects[key];
+            let pRadius = CartesianUtils.distance(center, p);
+            if (CartesianUtils.eqWithTolerance(radius, pRadius)) {
+                pointCircleIncidence.add(p.id, c.id);
             }
         });
+    }
 
+    function _updateIncidenceMatrixLine(lineId) {
+        let l = Arena.board.objects[lineId];
+        let p1 = l.point1;
+        let p2 = l.point2;
+        // pointLineIncidence.add(p1.id, l.id);
+        // pointLineIncidence.add(p2.id, l.id);
+
+        let slope = CartesianUtils.lineSlope(p1.X(), p1.Y(), p2.X(), p2.Y());
+
+        Object.keys(Arena.board.objects).filter((objKey) => {
+            return Arena.board.objects[objKey].elType === "point";
+        }).forEach((key) => {
+            let p = Arena.board.objects[key];
+            let pSlope = CartesianUtils.lineSlope(p1.X(), p1.Y(), p.X(), p.Y());
+            if (CartesianUtils.eqWithTolerance(slope, pSlope)) {
+                pointLineIncidence.add(p.id, l.id);
+            }
+        });
+    }
+
+    function _updateEquiClasses() {
+        // For every circle get points which lies on it.
+        // from the incidence matrix
+
+        Object.keys(Arena.board.objects).filter((objKey) => {
+            return Arena.board.objects[objKey].elType === "circle";
+        }).forEach((key) => {
+            let circle = Arena.board.objects[key];
+            let points = pointCircleIncidence.get(circle.id);
+            console.log("incidennce ", circle.id, points);
+            points.forEach((pId, idx, allPoints) => {
+                LogicWorld.liesOnCircle(circle.id, allPoints[0], pId);                
+            });
+        });        
     }
 
     function _displayEquiClasses() {
         let equiClasses = LogicWorld.getEquiClasses();
-
+        console.log("final equi classes", equiClasses);
         let colors = [
             "#FF0000",
             "#000000",
             "#00FF00",
-            "#FFFF00",
+            "#FFFFFF",
             "#00FF00"
         ]
         let colorIndex = 0;

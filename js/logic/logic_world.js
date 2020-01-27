@@ -15,7 +15,7 @@ function LogicWorld() {
             _getPair(c, p1),
             _getPair(c, p2)
         );
-        EqRelation.debug();
+        // EqRelation.debug();
     }
 
     function createLine(point1, point2) {

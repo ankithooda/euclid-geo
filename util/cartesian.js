@@ -9,8 +9,12 @@ module.exports = {
         return Math.sqrt(Math.pow(y2-y1, 2) + Math.pow(x2-x1, 2));
     },
 
-    eqWithTolerance: function(a, b) {
-        let t = 0.0001;
-        return Math.abs(a - b) < t;
+    eqWithTolerance: function(a, b, tolerance) {
+        tolerance = tolerance || 0.0001;
+        return Math.abs(a - b) < tolerance;
+    },
+
+    lineSlope: function(x1, y1, x2, y2) {
+        return (y2 - y1) / (x2 - x1);
     }
 }

@@ -130,7 +130,7 @@ function JXGArena() {
                     }
                     if(canCreate) {
                         intersectionPoints.push(p);
-                        _angle(g1, g2, p);
+                        // _angle(g1, g2, p);
                     } else {
                         self.board.removeObject(p);
                     }
