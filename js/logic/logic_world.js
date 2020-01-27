@@ -3,7 +3,7 @@ function LogicWorld() {
     var EqRelation = new Eq();
 
     function _getPair(p1, p2) {
-        return p1 + "-" + p2;
+        return [p1, p2].sort().join("-");
     }
 
     function _unpair(pair) {

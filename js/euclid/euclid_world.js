@@ -102,7 +102,6 @@ function EuclidWorld() {
         }).forEach((key) => {
             let p = Arena.board.objects[key];
             let pRadius = CartesianUtils.distance(center, p);
-            console.log("both radii", radius, pRadius, p.label.plaintext, center.label.plaintext);
             if (CartesianUtils.eqWithTolerance(radius, pRadius)) {
                 pointCircleIncidence.add(p.id, c.id);
             }
@@ -139,16 +138,15 @@ function EuclidWorld() {
             let circle = Arena.board.objects[key];
             let center = circle.center;
             let points = pointCircleIncidence.get(circle.id);
-            console.log("incidennce ", center.id, points);
+            let boundaryPoint = points[0];
             points.forEach((pId) => {
-                LogicWorld.liesOnCircle(center.id, points[0], pId);                
+                LogicWorld.liesOnCircle(center.id, boundaryPoint, pId);                
             });
         });        
     }
 
     function _displayEquiClasses() {
         let equiClasses = LogicWorld.getEquiClasses();
-        console.log("final equi classes", equiClasses);
         let colors = [
             "#FF0000",
             "#000000",
