@@ -53,8 +53,6 @@ function EuclidWorld() {
             _updateIncidenceMatrix();
             _updateEquiClasses();
             _displayEquiClasses();
-            pointCircleIncidence.debug();
-            pointLineIncidence.debug();
         }
         return l;
     }
@@ -66,8 +64,6 @@ function EuclidWorld() {
             _updateIncidenceMatrix();
             _updateEquiClasses();
             _displayEquiClasses();
-            pointCircleIncidence.debug();
-            pointLineIncidence.debug();
         }
         return c;
     }
@@ -102,10 +98,11 @@ function EuclidWorld() {
         let radius = CartesianUtils.distance(center, boundaryPoint);
 
         Object.keys(Arena.board.objects).filter((objKey) => {
-            return Arena.board.objects[objKey].elType === "point";
+            return _.includes(["point", "intersection"], Arena.board.objects[objKey].elType);
         }).forEach((key) => {
             let p = Arena.board.objects[key];
             let pRadius = CartesianUtils.distance(center, p);
+            console.log("both radii", radius, pRadius, p.label.plaintext, center.label.plaintext);
             if (CartesianUtils.eqWithTolerance(radius, pRadius)) {
                 pointCircleIncidence.add(p.id, c.id);
             }
@@ -122,7 +119,7 @@ function EuclidWorld() {
         let slope = CartesianUtils.lineSlope(p1.X(), p1.Y(), p2.X(), p2.Y());
 
         Object.keys(Arena.board.objects).filter((objKey) => {
-            return Arena.board.objects[objKey].elType === "point";
+            return _.includes(["point", "intersection"], Arena.board.objects[objKey].elType);
         }).forEach((key) => {
             let p = Arena.board.objects[key];
             let pSlope = CartesianUtils.lineSlope(p1.X(), p1.Y(), p.X(), p.Y());
@@ -142,9 +139,9 @@ function EuclidWorld() {
             let circle = Arena.board.objects[key];
             let center = circle.center;
             let points = pointCircleIncidence.get(circle.id);
-            console.log("incidennce ", circle.id, points);
-            points.forEach((pId, idx, allPoints) => {
-                LogicWorld.liesOnCircle(center.id, allPoints[0], pId);                
+            console.log("incidennce ", center.id, points);
+            points.forEach((pId) => {
+                LogicWorld.liesOnCircle(center.id, points[0], pId);                
             });
         });        
     }
