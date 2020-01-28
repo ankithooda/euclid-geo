@@ -155,7 +155,28 @@ function JXGArena() {
     }
 
     function angle(p1, p2, p3) {
-        console.log("points for angles", p1, p2, p3);
+        let alreadyExist = false;
+
+        // Check for alrady existing angles
+        Object.keys(self.board.objects).filter((objKey) => {
+            return self.board.objects[objKey].elType === "angle";
+        }).map((objKey) => {
+            let angle = self.board.objects[objKey]
+            let parents = angle.parents;
+            if (
+                parents[0] === p1.id && 
+                parents[1] === p2.id &&
+                parents[2] === p3.id
+            ) {
+                alreadyExist = true;
+            }
+        });
+
+        if (alreadyExist) {
+            return undefined;
+        }
+
+        // Check if lines exists for an angle to be created
         let lines = Object.keys(self.board.objects).filter((objKey) => {
             return self.board.objects[objKey].elType === "line";
         }).map((objKey) => {return self.board.objects[objKey]});
@@ -176,10 +197,11 @@ function JXGArena() {
 
                     if (commonPointId) {
                         if ((commonPointId === p2.id) 
-                             && ((lineiOtherPointId === p1.id && linejOtherPointId === p2.id)
-                             || ((lineiOtherPointId === p1.id && linejOtherPointId === p2.id)))
+                             && ((lineiOtherPointId === p1.id && linejOtherPointId === p3.id)
+                             || ((lineiOtherPointId === p3.id && linejOtherPointId === p1.id)))
                         ) {
-                            return self.board.create("angle", [p1, p2, p3], {radius: 2});
+                            let angle = self.board.create("angle", [p1, p2, p3], {radius: 2});
+                            return angle;
                         }
                     }
                 }
