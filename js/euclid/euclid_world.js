@@ -73,10 +73,10 @@ function EuclidWorld() {
     }
 
     function angle(p1, p2, p3) {
-        var p1Object = Arena.board.elementsByName[p1];
-        var p2Object = Arena.board.elementsByName[p2];
-        var p3Object = Arena.board.elementsByName[p3];
-        console.log(Arena.angle(p1Object, p2Object, p3Object));
+        let p1Object = Arena.board.elementsByName[p1];
+        let p2Object = Arena.board.elementsByName[p2];
+        let p3Object = Arena.board.elementsByName[p3];
+        Arena.angle(p1Object, p2Object, p3Object);
     }
 
     function _updateIncidenceMatrix() {

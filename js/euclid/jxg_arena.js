@@ -155,7 +155,37 @@ function JXGArena() {
     }
 
     function angle(p1, p2, p3) {
-        return self.board.create("angle", [p1, p2, p3], {radius: 3});
+        console.log("points for angles", p1, p2, p3);
+        let lines = Object.keys(self.board.objects).filter((objKey) => {
+            return self.board.objects[objKey].elType === "line";
+        }).map((objKey) => {return self.board.objects[objKey]});
+
+        for (let i = 0; i < lines.length; i++) {
+            for (let j = 0; j < lines.length; j++) {
+                if (i !== j) {
+                    let linei = lines[i];
+                    let linej = lines[j];
+
+                    let commonPointId = _.intersection(
+                        [linei.point1.id, linei.point2.id],
+                        [linej.point1.id, linej.point2.id]
+                    )[0];
+
+                    let lineiOtherPointId = commonPointId === linei.point1.id ? linei.point2.id : linei.point1.id;
+                    let linejOtherPointId = commonPointId === linej.point1.id ? linej.point2.id : linej.point1.id;
+
+                    if (commonPointId) {
+                        if ((commonPointId === p2.id) 
+                             && ((lineiOtherPointId === p1.id && linejOtherPointId === p2.id)
+                             || ((lineiOtherPointId === p1.id && linejOtherPointId === p2.id)))
+                        ) {
+                            return self.board.create("angle", [p1, p2, p3], {radius: 2});
+                        }
+                    }
+                }
+            }
+        }
+        return undefined;
     }
 
     function button(x, y, label, handler) {
