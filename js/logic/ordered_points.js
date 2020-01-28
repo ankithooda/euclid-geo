@@ -1,37 +1,42 @@
 const Cartesian = require("../../util/cartesian");
-const Arena = require("../../euclid/jsx_arena");
+const Arena = require("../euclid/jxg_arena");
 
 function OrderedPoints() {
     var orderedPoints = {};
 
     function getOrderedPoints(lineId) {
-        return orderedPoints.lineId;
+        return orderedPoints[lineId];
     }
 
-    function addPoint(lineId) {
-        var points = getAllPointsFromEqClass(lineId); // TODO update after ankit's implementation
+    function addPoints(lineId, points) {
         if(points.length > 2) {
-            if(orderedPoints.lineId === undefined) {
-                orderedPoints.lineId = [];
+            if(orderedPoints[lineId] === undefined) {
+                orderedPoints[lineId] = [];
             }
-            points.map((pointId) {
-                var point = Arena.getUsrCoordinateOfPoint(pointId);
-                if(!orderedPoints.lineId.includes(point)) {
-                    orderedPoints.lineId = _sortedInsert(point, orderedPoints.lineId);
+            orderedPoints[lineId].map((pointObject) => {
+                if(points.includes(pointObject.id)) {
+                    points.splice(points.indexOf(pointObject.id), 1);
                 }
             });
+            points.map((pointId) => {
+                var coordinates = Arena.getUsrCoordinateOfPoint(pointId);
+                var point = {id: pointId, coordinates: coordinates};
+                orderedPoints[lineId] = _sortedInsert(point, orderedPoints[lineId]);
+            });
         }
-        console.log(orderedPoints);
     }
 
     function _sortedInsert(element, array) {
-        array.splice(_locationOf(element, array, 0, array.length) + 1, 0, element);
+        var location = _locationOf(element, array, 0, array.length);
+        array.splice(location + 1, 0, element);
         return array;
     }
-
     function _compareFunction(pointObject1, pointObject2) {
-        // This will work since it is given that the points lie on the same line. Will not for points not lying on the same line.
-        Cartesian.compWithTolerance(pointObject1.x + pointObject1.y, pointObject2.x + pointObject2.y);
+        var xComp = Cartesian.compWithTolerance(pointObject1.coordinates.x, pointObject2.coordinates.x);
+        switch (xComp) {
+            case 0: return Cartesian.compWithTolerance(pointObject1.coordinates.y, pointObject2.coordinates.y);
+            default: return xComp;
+        }
     };
 
     function _locationOf(element, array, start, end) {
@@ -49,9 +54,15 @@ function OrderedPoints() {
             case 1: return _locationOf(element, array, pivot, end);
         };
     };
+
+    function debug() {
+        console.log("Ordered Points: ", orderedPoints);
+    }
+
     return {
-        getAllPoints: getAllPoints,
-        addPoint: addPoint,
+        getOrderedPoints: getOrderedPoints,
+        addPoints: addPoints,
+        debug: debug
     }
 }
 

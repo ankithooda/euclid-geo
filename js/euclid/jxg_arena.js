@@ -36,7 +36,7 @@ function JXGArena() {
 
     function getUsrCoordinateOfPoint(id) {
         var object = self.board.objects[id];
-        if(object !== undefined && object.elType === "point") {
+        if(object !== undefined && (object.elType === "point" || object.elType === "intersection")) {
             return {x: object.coords.usrCoords[1], y: object.coords.usrCoords[2]};
         }
     }

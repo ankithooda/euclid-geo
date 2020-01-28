@@ -53,6 +53,7 @@ function EuclidWorld() {
             Arena.intersection(l);
             _updateIncidenceMatrix();
             _updateEquiClasses();
+            _updateOrderedPoints();
             _displayEquiClasses();
         }
         return l;
@@ -64,6 +65,7 @@ function EuclidWorld() {
             Arena.intersection(c);
             _updateIncidenceMatrix();
             _updateEquiClasses();
+            _updateOrderedPoints();
             _displayEquiClasses();
         }
         return c;
@@ -78,6 +80,16 @@ function EuclidWorld() {
         var p2Object = Arena.board.elementsByName[p2];
         var p3Object = Arena.board.elementsByName[p3];
         console.log(Arena.angle(p1Object, p2Object, p3Object));
+    }
+
+    function _updateOrderedPoints() {
+        for (var el in Arena.board.objects) {
+            var object = Arena.board.objects[el];
+            if(object.elType === "line") {
+                var points = pointLineIncidence.get(el);
+                OrderedPoints.addPoints(el, points);
+            }
+        }
     }
 
     function _updateIncidenceMatrix() {
@@ -96,13 +108,13 @@ function EuclidWorld() {
         let ancestors = _.values(c.ancestors);
         let boundaryPoint = center.id === ancestors[0].id ? ancestors[1] : ancestors[0];
 
-        let radius = CartesianUtils.distance(center, boundaryPoint);
+        let radius = CartesianUtils.distance(center.X(), center.Y(), boundaryPoint.X(), boundaryPoint.Y());
 
         Object.keys(Arena.board.objects).filter((objKey) => {
             return _.includes(["point", "intersection"], Arena.board.objects[objKey].elType);
         }).forEach((key) => {
             let p = Arena.board.objects[key];
-            let pRadius = CartesianUtils.distance(center, p);
+            let pRadius = CartesianUtils.distance(center.X(), center.Y(), p.X(), p.Y());
             if (CartesianUtils.eqWithTolerance(radius, pRadius)) {
                 pointCircleIncidence.add(p.id, c.id);
             }
