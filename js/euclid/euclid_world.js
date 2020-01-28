@@ -158,6 +158,23 @@ function EuclidWorld() {
         });        
     }
 
+    function _assignRealToEquiClasses() {
+        let equiClasses = LogicWorld.getEquiClasses();
+        let assignedEquiClass = {};
+        equiClasses.forEach((klasses) => {
+            let firstLine = klasses[0];
+            let p1 = Arena.board.objects[firstLine[0]];
+            let p2 = Arena.board.objects[firstLine[1]];
+
+            let distance = parseFloat(CartesianUtils.distance(p1.X(), p1.Y(), p2.X(), p2.Y()).toFixed(4));
+            klasses.forEach((klass) => {
+                assignedEquiClass[klass[0] + "-" + klass[1]] = distance;
+                assignedEquiClass[klass[1] + "-" + klass[0]] = distance;
+            });
+        });
+        return assignedEquiClass;
+    }
+
     function _displayEquiClasses() {
         let equiClasses = LogicWorld.getEquiClasses();
         let colors = [
