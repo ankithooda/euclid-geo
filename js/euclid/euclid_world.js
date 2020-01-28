@@ -1,4 +1,5 @@
 const Arena = require("./jxg_arena");
+const OrderedPoints = require("../logic/ordered_points");
 const LogicWorld = require("../logic/logic_world");
 const _ = require("lodash");
 const Incidence = require("./incidence_structure");
