@@ -16,5 +16,14 @@ module.exports = {
 
     lineSlope: function(x1, y1, x2, y2) {
         return (y2 - y1) / (x2 - x1);
+    },
+
+    angle: function(x1, y1, x2, y2, x3, y3) {
+        let angle = Math.atan2(y3 - y1, x3 - x1) -
+        Math.atan2(y2 - y1, x2 - x1);
+        if (angle < 0) {
+            angle = angle + 2 * 3.14;
+        }
+        return angle;
     }
 }

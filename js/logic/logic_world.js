@@ -30,10 +30,24 @@ function LogicWorld() {
         });
     }
 
+    function getEqual(p1, p2) {
+        let pair = _getPair(p1, p2);
+        return EqRelation.getEqual(pair).map((thing) => {return _unpair(thing)});
+    }
+
+    function holdEqualityForLines(p1, p2, p3, p4) {
+        EqRelation.hold(
+            _getPair(p1, p2),
+            _getPair(p3, p4)
+        );
+    }
+
     return {
         liesOnCircle: liesOnCircle,
         createLine: createLine,
-        getEquiClasses: getEquiClasses
+        getEquiClasses: getEquiClasses,
+        getEqual: getEqual,
+        holdEqualityForLines: holdEqualityForLines
     }
 }
 

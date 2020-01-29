@@ -63,7 +63,7 @@ function Eq() {
     function runGC() {
         let newEqClass = [];
         equivalenceClasses.forEach(function(eqClass) {
-            if (eqClass != emptyObject) {
+            if (Object.keys(eqClass).length != 0) {
                 newEqClass.push(eqClass);
             }
         });

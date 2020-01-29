@@ -76,7 +76,60 @@ function EuclidWorld() {
         let p1Object = Arena.board.elementsByName[p1];
         let p2Object = Arena.board.elementsByName[p2];
         let p3Object = Arena.board.elementsByName[p3];
-        Arena.angle(p1Object, p2Object, p3Object);
+        let a = Arena.angle(p1Object, p2Object, p3Object);
+        if (a) {
+            _handleAngleCreation(a);
+        }
+    }
+
+    function _handleAngleCreation(a) {
+        console.log("CREATED ANGLE", a);
+
+        console.log("point1", a.point1.name);
+        console.log("point2", a.point2.name);
+        console.log("point3", a.point3.name);
+        console.log("angle value", a.Value());
+
+        // Get equal segments for both arms
+        let arm1 = LogicWorld.getEqual(a.point1.id, a.point2.id);
+        let arm2 = LogicWorld.getEqual(a.point1.id, a.point3.id);
+
+        arm1.forEach((line1) => {
+            arm2.forEach((line2) => {
+                let commonPointId = _.intersection(line1, line2);
+                if (commonPointId.length === 1) {
+                    commonPointId = commonPointId[0];
+                    let line1OtherPointId = commonPointId === line1[0] ? line1[1] : line1[0];
+                    let line2OtherPointId = commonPointId === line2[0] ? line2[1] : line2[0];
+
+                    let commonPoint = Arena.board.objects[commonPointId];
+                    let line1OtherPoint = Arena.board.objects[line1OtherPointId];
+                    let line2OtherPoint = Arena.board.objects[line2OtherPointId];
+
+                    let angle = CartesianUtils.angle(
+                        commonPoint.X(),
+                        commonPoint.Y(),
+                        line1OtherPoint.X(),
+                        line1OtherPoint.Y(),
+                        line2OtherPoint.X(),
+                        line2OtherPoint.Y()
+                    );
+
+                    if (CartesianUtils.eqWithTolerance(angle, a.Value())) {
+                        LogicWorld.holdEqualityForLines(
+                            a.point2.id,
+                            a.point3.id,
+                            line1OtherPoint.id,
+                            line2OtherPoint
+                        )
+                        let newAngle = Arena.angle(commonPoint, line1OtherPoint, line2OtherPoint);
+                        if (newAngle) {
+                            newAngle.setLabelText = a.getAttribute('label');
+                        }
+                    }
+                }
+            });
+        });
     }
 
     function _updateIncidenceMatrix() {
