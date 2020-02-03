@@ -18,6 +18,14 @@ function LogicWorld() {
         // EqRelation.debug();
     }
 
+    function holdEqRelationFromComposition(pair1, pair2) {
+        EqRelation.hold(
+            _getPair(pair1[0], pair1[1]),
+            _getPair(pair2[0], pair2[1])
+        );
+//         EqRelation.debug1();
+    }
+
     function createLine(point1, point2) {
         EqRelation.hold(_getPair(point1, point2), _getPair(point2, point1));
         EqRelation.debug();
@@ -32,6 +40,7 @@ function LogicWorld() {
 
     return {
         liesOnCircle: liesOnCircle,
+        holdEqRelationFromComposition: holdEqRelationFromComposition,
         createLine: createLine,
         getEquiClasses: getEquiClasses
     }

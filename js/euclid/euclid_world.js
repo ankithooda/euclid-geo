@@ -1,5 +1,6 @@
 const Arena = require("./jxg_arena");
 const OrderedPoints = require("../logic/ordered_points");
+const Composition = require("../logic/composition");
 const LogicWorld = require("../logic/logic_world");
 const _ = require("lodash");
 const Incidence = require("./incidence_structure");
@@ -9,6 +10,8 @@ function EuclidWorld() {
     var self = this;
     var pointLineIncidence = new Incidence();
     var pointCircleIncidence = new Incidence();
+    var orderedPoints = new OrderedPoints(Arena);
+    var composition = new Composition();
 
     var getMouseCoords = function(e, i) {
         var cPos = Arena.board.getCoordsTopLeftCorner(e, i),
@@ -54,6 +57,7 @@ function EuclidWorld() {
             _updateIncidenceMatrix();
             _updateEquiClasses();
             _updateOrderedPoints();
+            _updateCompositions();
             _displayEquiClasses();
         }
         return l;
@@ -66,6 +70,7 @@ function EuclidWorld() {
             _updateIncidenceMatrix();
             _updateEquiClasses();
             _updateOrderedPoints();
+            _updateCompositions();
             _displayEquiClasses();
         }
         return c;
@@ -87,7 +92,22 @@ function EuclidWorld() {
             var object = Arena.board.objects[el];
             if(object.elType === "line") {
                 var points = pointLineIncidence.get(el);
-                OrderedPoints.addPoints(el, points);
+                orderedPoints.addPoints(el, points);
+            }
+        }
+//        orderedPoints.debug();
+    }
+
+    function _updateCompositions() {
+        var eqRealMap = _assignRealToEquiClasses();
+        for (var el in Arena.board.objects) {
+            var object = Arena.board.objects[el];
+            if(object.elType === "line") {
+                var pointObjects = orderedPoints.getOrderedPoints(el);
+                if(pointObjects !== undefined) {
+                    var points = pointObjects.map((object) => {return object.id});
+                    composition.generate(points, eqRealMap, LogicWorld);
+                }
             }
         }
     }

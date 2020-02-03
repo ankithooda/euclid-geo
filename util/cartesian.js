@@ -11,15 +11,11 @@ module.exports = {
     compWithTolerance: function(a, b, tolerance) {
         tolerance = tolerance || 0.0001;
         let diff = a - b;
-        console.log("diff ", diff);
         if(Math.abs(diff) < tolerance) {
-            console.log("equal case");
          return 0;
         } else if(diff < 0) {
-            console.log("lesser case");
             return -1;
         } else if(diff > 0) {
-            console.log("greater case");
             return 1;
         }
     },

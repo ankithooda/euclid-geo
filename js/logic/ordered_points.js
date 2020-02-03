@@ -1,7 +1,6 @@
 const Cartesian = require("../../util/cartesian");
-const Arena = require("../euclid/jxg_arena");
 
-function OrderedPoints() {
+function OrderedPoints(jxgArena) {
     var orderedPoints = {};
 
     function getOrderedPoints(lineId) {
@@ -19,7 +18,7 @@ function OrderedPoints() {
                 }
             });
             points.map((pointId) => {
-                var coordinates = Arena.getUsrCoordinateOfPoint(pointId);
+                var coordinates = jxgArena.getUsrCoordinateOfPoint(pointId);
                 var point = {id: pointId, coordinates: coordinates};
                 orderedPoints[lineId] = _sortedInsert(point, orderedPoints[lineId]);
             });
@@ -66,4 +65,4 @@ function OrderedPoints() {
     }
 }
 
-module.exports = new OrderedPoints();
+module.exports = OrderedPoints;
