@@ -13,7 +13,8 @@ function JXGArena() {
             axis:false,
             grid:true,
             showCopyright: false,
-            keepaspectratio: true
+            keepaspectratio: true,
+            maxNameLength: 10
         }
     );
 
