@@ -60,6 +60,10 @@ function Eq() {
         console.log("\n\n");
     }
 
+    function debug1() {
+        console.log("EQUI CLASSES ", equivalenceClasses);
+    }
+
     function runGC() {
         let newEqClass = [];
         equivalenceClasses.forEach(function(eqClass) {
@@ -76,6 +80,7 @@ function Eq() {
         getEqual: getEqual,
         getAll: getAll,
         debug: printDebugInfo,
+        debug1: debug1,
         gc: runGC
     }
 }

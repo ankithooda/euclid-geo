@@ -1,4 +1,6 @@
 const Arena = require("./jxg_arena");
+const OrderedPoints = require("../logic/ordered_points");
+const Composition = require("../logic/composition");
 const LogicWorld = require("../logic/logic_world");
 const _ = require("lodash");
 const Incidence = require("./incidence_structure");
@@ -8,6 +10,8 @@ function EuclidWorld() {
     var self = this;
     var pointLineIncidence = new Incidence();
     var pointCircleIncidence = new Incidence();
+    var orderedPoints = new OrderedPoints(Arena);
+    var composition = new Composition();
 
     var getMouseCoords = function(e, i) {
         var cPos = Arena.board.getCoordsTopLeftCorner(e, i),
@@ -52,6 +56,8 @@ function EuclidWorld() {
             Arena.intersection(l);
             _updateIncidenceMatrix();
             _updateEquiClasses();
+            _updateOrderedPoints();
+            _updateCompositions();
             _displayEquiClasses();
         }
         return l;
@@ -63,6 +69,8 @@ function EuclidWorld() {
             Arena.intersection(c);
             _updateIncidenceMatrix();
             _updateEquiClasses();
+            _updateOrderedPoints();
+            _updateCompositions();
             _displayEquiClasses();
         }
         return c;
@@ -77,6 +85,31 @@ function EuclidWorld() {
         var p2Object = Arena.board.elementsByName[p2];
         var p3Object = Arena.board.elementsByName[p3];
         console.log(Arena.angle(p1Object, p2Object, p3Object));
+    }
+
+    function _updateOrderedPoints() {
+        for (var el in Arena.board.objects) {
+            var object = Arena.board.objects[el];
+            if(object.elType === "line") {
+                var points = pointLineIncidence.get(el);
+                orderedPoints.addPoints(el, points);
+            }
+        }
+//        orderedPoints.debug();
+    }
+
+    function _updateCompositions() {
+        var eqRealMap = _assignRealToEquiClasses();
+        for (var el in Arena.board.objects) {
+            var object = Arena.board.objects[el];
+            if(object.elType === "line") {
+                var pointObjects = orderedPoints.getOrderedPoints(el);
+                if(pointObjects !== undefined) {
+                    var points = pointObjects.map((object) => {return object.id});
+                    composition.generate(points, eqRealMap, LogicWorld);
+                }
+            }
+        }
     }
 
     function _updateIncidenceMatrix() {
@@ -95,13 +128,13 @@ function EuclidWorld() {
         let ancestors = _.values(c.ancestors);
         let boundaryPoint = center.id === ancestors[0].id ? ancestors[1] : ancestors[0];
 
-        let radius = CartesianUtils.distance(center, boundaryPoint);
+        let radius = CartesianUtils.distance(center.X(), center.Y(), boundaryPoint.X(), boundaryPoint.Y());
 
         Object.keys(Arena.board.objects).filter((objKey) => {
             return _.includes(["point", "intersection"], Arena.board.objects[objKey].elType);
         }).forEach((key) => {
             let p = Arena.board.objects[key];
-            let pRadius = CartesianUtils.distance(center, p);
+            let pRadius = CartesianUtils.distance(center.X(), center.Y(), p.X(), p.Y());
             if (CartesianUtils.eqWithTolerance(radius, pRadius)) {
                 pointCircleIncidence.add(p.id, c.id);
             }
@@ -143,6 +176,23 @@ function EuclidWorld() {
                 LogicWorld.liesOnCircle(center.id, boundaryPoint, pId);                
             });
         });        
+    }
+
+    function _assignRealToEquiClasses() {
+        let equiClasses = LogicWorld.getEquiClasses();
+        let assignedEquiClass = {};
+        equiClasses.forEach((klasses) => {
+            let firstLine = klasses[0];
+            let p1 = Arena.board.objects[firstLine[0]];
+            let p2 = Arena.board.objects[firstLine[1]];
+
+            let distance = parseFloat(CartesianUtils.distance(p1.X(), p1.Y(), p2.X(), p2.Y()).toFixed(4));
+            klasses.forEach((klass) => {
+                assignedEquiClass[klass[0] + "-" + klass[1]] = distance;
+                assignedEquiClass[klass[1] + "-" + klass[0]] = distance;
+            });
+        });
+        return assignedEquiClass;
     }
 
     function _displayEquiClasses() {

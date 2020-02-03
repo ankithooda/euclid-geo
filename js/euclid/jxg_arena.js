@@ -34,6 +34,13 @@ function JXGArena() {
         }
     }
 
+    function getUsrCoordinateOfPoint(id) {
+        var object = self.board.objects[id];
+        if(object !== undefined && (object.elType === "point" || object.elType === "intersection")) {
+            return {x: object.coords.usrCoords[1], y: object.coords.usrCoords[2]};
+        }
+    }
+
     function canCreateLineElement(type, start, end) {
         var canCreate = true;
         var startId = self.board.elementsByName[start].id;
@@ -112,6 +119,10 @@ function JXGArena() {
         return childElements;
     }
 
+    function getEntityById(id) {
+        self.board.objects[id];
+    }
+
     function intersection(g1) {
         var eligibleElements = ["line", "segment", "circle"];
         var intersectionPoints = [];
@@ -170,6 +181,8 @@ function JXGArena() {
         extendLineSegment: extendLineSegment,
         circle: circle,
         getAllPointsOnCircle: getAllPointsOnCircle,
+        getEntityById: getEntityById,
+        getUsrCoordinateOfPoint: getUsrCoordinateOfPoint,
         intersection: intersection,
         angle: angle,
         button: button,
