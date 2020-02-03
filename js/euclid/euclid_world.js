@@ -23,12 +23,21 @@ function EuclidWorld() {
     };
     var down = function(e) {
         var i;
+        var navigationBarClicked = false;
+        for(var j = 0; j < e.path.length; ++j) {
+            if(e.path[j].id === "arenabox_navigationbar") {
+                navigationBarClicked = true;
+                break;
+            }
+        }
         if (e[JXG.touchProperty]) {
             // index of the finger that is used to extract the coordinates
             i = 0;
         }
         var coords = getMouseCoords(e, i);
-        point(coords);
+        if (!navigationBarClicked) {
+            point(coords);
+        }
     };
     Arena.board.on('down', down);
 
