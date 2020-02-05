@@ -79,6 +79,8 @@ function EuclidWorld() {
         let a = Arena.angle(p1Object, p2Object, p3Object);
         if (a) {
             _handleAngleCreation(a);
+            _displayEquiClasses();
+
         }
     }
 
@@ -94,6 +96,9 @@ function EuclidWorld() {
         let arm1 = LogicWorld.getEqual(a.point1.id, a.point2.id);
         let arm2 = LogicWorld.getEqual(a.point1.id, a.point3.id);
 
+        console.log("arm1", arm1);
+        console.log("arm2", arm2);
+
         arm1.forEach((line1) => {
             arm2.forEach((line2) => {
                 let commonPointId = _.intersection(line1, line2);
@@ -106,6 +111,7 @@ function EuclidWorld() {
                     let line1OtherPoint = Arena.board.objects[line1OtherPointId];
                     let line2OtherPoint = Arena.board.objects[line2OtherPointId];
 
+                    // Calculate angle between the two lines
                     let angle = CartesianUtils.angle(
                         commonPoint.X(),
                         commonPoint.Y(),
@@ -115,7 +121,23 @@ function EuclidWorld() {
                         line2OtherPoint.Y()
                     );
 
-                    if (CartesianUtils.eqWithTolerance(angle, a.Value())) {
+                    // Check if equality already holds
+                    let existingEquiClasses = LogicWorld.getEqual(line1OtherPoint.id, line2OtherPoint.id);
+                    let alreadyEqual = false;
+
+                    // console.log("existing equi classes", line1OtherPoint.id, line2OtherPoint.id, existingEquiClasses);
+
+                    existingEquiClasses.forEach((line) => {
+                        if (_.intersection(line, [a.point2.id, a.point3.id]).length === 2) {
+                            alreadyEqual = true;
+                        }
+                    });
+
+                    // If the new angle is equal to created angle
+                    // Update equality relation
+                    // Create angle
+                    if (!alreadyEqual && CartesianUtils.eqWithTolerance(angle, a.Value())) {
+
                         LogicWorld.holdEqualityForLines(
                             a.point2.id,
                             a.point3.id,
