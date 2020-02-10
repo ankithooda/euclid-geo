@@ -142,7 +142,7 @@ function EuclidWorld() {
                             a.point2.id,
                             a.point3.id,
                             line1OtherPoint.id,
-                            line2OtherPoint
+                            line2OtherPoint.id
                         )
                         let newAngle = Arena.angle(commonPoint, line1OtherPoint, line2OtherPoint);
                         if (newAngle) {
